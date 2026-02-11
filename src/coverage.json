@@ -1,0 +1,49 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-11T15:30:16.571Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 2,
+    "implemented": 2,
+    "items": [
+      {
+        "id": "REQ-10",
+        "summary": "Update the application header logo so the displayed image matches the originally uploaded/provided logo (the user reports the current logo is not the same). Ensure the header continues to load the logo as a static asset from frontend/public/assets/generated (no backend routing).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/assets/generated/rajesh-kurkure-garhwa-logo-corrected.dim_256x256.png"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/rajesh-kurkure-garhwa-logo-corrected.dim_256x256.png"
+        ]
+      },
+      {
+        "id": "REQ-11",
+        "summary": "Remove the branding regression risk by making the logo reference unambiguous: ensure App.tsx references the corrected logo filename and that the referenced file exists in frontend/public/assets/generated.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/public/assets/generated/rajesh-kurkure-garhwa-logo-corrected.dim_256x256.png",
+    "frontend/src/App.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

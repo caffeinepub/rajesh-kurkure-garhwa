@@ -1,0 +1,39 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Correct header logo asset and reference",
+  "requirements": [
+    {
+      "id": "REQ-10",
+      "summary": "Replace the header logo artwork with the corrected static asset under frontend/public/assets/generated so the displayed logo matches the originally provided image.",
+      "acceptanceCriteria": [
+        "When the app loads, the header logo visually matches the originally uploaded/provided logo.",
+        "The logo is served as a static file under frontend/public/assets/generated and is referenced by a /assets/generated/... path in the frontend.",
+        "No logo image is fetched via the backend canister; there are no backend routes/handlers for image serving."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/rajesh-kurkure-garhwa-logo-corrected.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the corrected logo image asset (replacing the mismatched artwork) as a static file to be served directly by the frontend."
+        }
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "summary": "Make the logo reference unambiguous by updating App.tsx to reference the corrected logo filename that exists in frontend/public/assets/generated.",
+      "acceptanceCriteria": [
+        "frontend/src/App.tsx references a logo filename that exists in frontend/public/assets/generated.",
+        "The <img> alt text remains in English and continues to describe the logo appropriately.",
+        "A hard refresh shows the corrected logo (not the old/mismatched one)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update the header <img> src to reference /assets/generated/rajesh-kurkure-garhwa-logo-corrected.dim_256x256.png while keeping the existing English alt text and leaving the app name text unchanged."
+        }
+      ]
+    }
+  ]
+}

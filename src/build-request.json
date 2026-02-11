@@ -1,0 +1,69 @@
+{
+  "kind": "build_request",
+  "title": "Fix header logo to match the originally uploaded image",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-10",
+      "text": "Update the application header logo so the displayed image matches the originally uploaded/provided logo (the user reports the current logo is not the same). Ensure the header continues to load the logo as a static asset from frontend/public/assets/generated (no backend routing).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "The logo is not that same"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When the app loads, the header logo visually matches the originally uploaded/provided logo.",
+        "The logo is served as a static file under frontend/public/assets/generated and is referenced by a /assets/generated/... path in the frontend.",
+        "No logo image is fetched via the backend canister; there are no backend routes/handlers for image serving."
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "text": "Remove the branding regression risk by making the logo reference unambiguous: ensure App.tsx references the corrected logo filename and that the referenced file exists in frontend/public/assets/generated.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "The logo is not that same"
+        ]
+      },
+      "acceptanceCriteria": [
+        "frontend/src/App.tsx references a logo filename that exists in frontend/public/assets/generated.",
+        "The <img> alt text remains in English and continues to describe the logo appropriately.",
+        "A hard refresh shows the corrected logo (not the old/mismatched one)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not edit files in frontend/src/components/ui (read-only UI component sources).",
+    "Do not edit immutable hook/entry paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx.",
+    "Keep backend as a single Motoko actor; no backend changes are required for this logo fix."
+  ],
+  "nonGoals": [
+    "Do not change login behavior, product management behavior, or localStorage persistence.",
+    "Do not introduce new authentication providers or any third-party image hosting/CDN.",
+    "Do not change the app name text \"RAJESH KURKURE GARHWA\" in the header/footer/title."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": [
+      "Replace the logo artwork so it matches the originally uploaded/provided logo (rajesh-kurkure-garhwa-logo.dim_256x256.png > rajesh-kurkure-garhwa-logo-corrected.dim_256x256.png)"
+    ]
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

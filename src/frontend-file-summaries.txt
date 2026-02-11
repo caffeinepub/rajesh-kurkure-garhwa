@@ -1,0 +1,11 @@
+{
+  "frontend/src/App.tsx": "Main application component managing login state, user roles (guest/customer/admin), and coordinating between LoginView, ShopView, and AdminPanel with header displaying \"RAJESH KURKURE GARHWA\" branding and the corrected logo asset, plus footer with updated copyright.",
+  "frontend/src/components/LoginView.tsx": "Login form component with username/password inputs, validation for empty fields, admin credential checking (admin/admin123), and inline error display using Alert components.",
+  "frontend/src/components/ShopView.tsx": "Product listing component displaying products in a responsive grid with cards showing name, rupee-formatted price, and Order button; shows empty state when no products exist.",
+  "frontend/src/components/AdminPanel.tsx": "Admin-only product management form with name and price inputs, validation, success/error feedback using Alert components, and integration with the products state hook.",
+  "frontend/src/types/product.ts": "TypeScript interface definition for Product type with name and price properties used throughout the application.",
+  "frontend/src/hooks/useProducts.ts": "Custom React hook managing product state with localStorage persistence, loading products on mount and saving on changes, with error handling for storage operations.",
+  "frontend/src/index.css": "Global styles with Tailwind directives and OKLCH color system defining a warm amber/orange primary palette with forest green accents for a school-appropriate theme in both light and dark modes.",
+  "frontend/tailwind.config.js": "Tailwind configuration extending the theme with custom font families (Inter, Poppins), OKLCH color tokens, border radius variables, custom shadows, and animation keyframes for the school-themed design.",
+  "frontend/index.html": "HTML entry point with document title updated to \"RAJESH KURKURE GARHWA\"."
+}

@@ -1,0 +1,19 @@
+{
+  "backend/main.mo": "Empty Motoko actor with no methods or logic.",
+  "feature_evidence.json": "Report describing two logo‑related frontend features and their associated components and tests.",
+  "frontend-file-summaries.txt": "Mapping of frontend file paths to short descriptive summaries of each component and configuration file.",
+  "frontend/index.css": "Tailwind base styles defining OKLCH color vars for light/dark themes plus global background and border settings.",
+  "frontend/index.html": "Basic HTML entry loading the React app with the updated title.",
+  "frontend/src/App.tsx": "Main React app managing login roles, product state, header logo, ordering messages, and conditional admin panel.",
+  "frontend/src/components/AdminPanel.tsx": "Admin form for adding products with validation and success/error alerts.",
+  "frontend/src/components/LoginView.tsx": "Login form validating credentials and assigning admin or customer roles.",
+  "frontend/src/components/ShopView.tsx": "Displays product cards or an empty state and triggers order callbacks.",
+  "frontend/src/hooks/useActor.ts": "React hook creating and refreshing a backend actor based on Internet Identity auth state.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Provides a React context and provider for Internet Identity authentication using AuthClient, exposing identity, login, logout, and login-status states.",
+  "frontend/src/hooks/useProducts.ts": "Manages a product list with localStorage persistence and exposes the list plus an addProduct function.",
+  "frontend/src/index.css": "Defines Tailwind base layers and custom OKLCH color variables for light and dark themes.",
+  "frontend/src/main.tsx": "Bootstraps the React app, wrapping it with React Query and the InternetIdentityProvider.",
+  "frontend/src/types/product.ts": "Defines the Product interface with name and price fields.",
+  "frontend/tailwind.config.js": "Tailwind configuration extending fonts, colors, radii, shadows, and keyframes, with plugins enabled for typography, container queries, and animations.",
+  "project_state.json": "Describes the project state, features, issues, and branding fix requirements for a single‑page product and login app."
+}
