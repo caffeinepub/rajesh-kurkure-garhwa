@@ -2,9 +2,15 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-application-header-logo-so-the-displayed-image-matches-the-originally-uploaded-provided-logo-the-user-reports-the-current-logo-is-not-the-same-ensure-the-header-continues-to-load-the-logo-as-a-static-asset-from-frontend-public-assets-generated-no-backend-routing",
-      "featureTitle": "Update the application header logo so the displayed image matches the originally uploaded/provided logo (the user reports the current logo is not the same). Ensure the header continues to load the logo as a static asset from frontend/public/assets/generated (no backend routing).",
-      "files": [],
+      "featureId": "feature-capture-and-persist-the-customer-name-for-each-placed-order-so-the-admin-can-see-order-history-separated-by-customer",
+      "featureTitle": "Capture and persist the customer name for each placed order, so the admin can see order history separated by customer.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/LoginView.tsx",
+        "frontend/src/components/OrdersPanel.tsx",
+        "frontend/src/hooks/useOrders.ts",
+        "frontend/src/types/order.ts"
+      ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
@@ -13,15 +19,17 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-10"
+        "REQ-16"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-remove-the-branding-regression-risk-by-making-the-logo-reference-unambiguous-ensure-app-tsx-references-the-corrected-logo-filename-and-that-the-referenced-file-exists-in-frontend-public-assets-generated",
-      "featureTitle": "Remove the branding regression risk by making the logo reference unambiguous: ensure App.tsx references the corrected logo filename and that the referenced file exists in frontend/public/assets/generated.",
+      "featureId": "feature-add-an-admin-only-action-to-clear-delete-the-entire-stored-order-history-localstorage-orders-with-in-app-confirmation-and-feedback-no-browser-alert",
+      "featureTitle": "Add an admin-only action to clear/delete the entire stored order history (localStorage orders) with in-app confirmation and feedback (no browser alert).",
       "files": [
-        "frontend/src/App.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/components/OrdersPanel.tsx",
+        "frontend/src/hooks/useOrders.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -31,7 +39,26 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-11"
+        "REQ-17"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-on-the-customer-product-page-list-sort-products-by-most-selling-highest-number-of-orders-using-the-stored-order-history-as-the-source-of-sales-counts",
+      "featureTitle": "On the customer product page, list/sort products by \"most selling\" (highest number of orders) using the stored order history as the source of sales counts.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/ShopView.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-18"
       ],
       "confidence": "high"
     }

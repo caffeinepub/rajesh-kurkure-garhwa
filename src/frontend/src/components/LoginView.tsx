@@ -9,7 +9,7 @@ import { AlertCircle } from 'lucide-react';
 type UserRole = 'guest' | 'customer' | 'admin';
 
 interface LoginViewProps {
-  onLogin: (role: UserRole) => void;
+  onLogin: (role: UserRole, username: string) => void;
 }
 
 export default function LoginView({ onLogin }: LoginViewProps) {
@@ -29,16 +29,16 @@ export default function LoginView({ onLogin }: LoginViewProps) {
 
     // Check admin credentials
     if (username === 'admin' && password === 'admin123') {
-      onLogin('admin');
+      onLogin('admin', username);
       return;
     }
 
     // Any other non-empty credentials = customer
-    onLogin('customer');
+    onLogin('customer', username);
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="flex flex-col items-center justify-center gap-8 min-h-[60vh] max-w-4xl mx-auto">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-2">
           <CardTitle className="text-2xl text-center">Customer Login</CardTitle>

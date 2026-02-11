@@ -1,69 +1,81 @@
 {
   "kind": "build_request",
-  "title": "Fix header logo to match the originally uploaded image",
+  "title": "Add customer-named order history, clear history action, and most-selling product sorting",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-10",
-      "text": "Update the application header logo so the displayed image matches the originally uploaded/provided logo (the user reports the current logo is not the same). Ensure the header continues to load the logo as a static asset from frontend/public/assets/generated (no backend routing).",
+      "id": "REQ-16",
+      "text": "Capture and persist the customer name for each placed order, so the admin can see order history separated by customer.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-6"
         ],
         "quotes": [
-          "The logo is not that same"
+          "The oder history would be with the name of customers separately"
         ]
       },
       "acceptanceCriteria": [
-        "When the app loads, the header logo visually matches the originally uploaded/provided logo.",
-        "The logo is served as a static file under frontend/public/assets/generated and is referenced by a /assets/generated/... path in the frontend.",
-        "No logo image is fetched via the backend canister; there are no backend routes/handlers for image serving."
+        "When a customer is logged in and places an order, the saved order record includes the customer name (derived from the login username).",
+        "Admin orders view displays the customer name for each order and/or groups orders by customer so customers are separated clearly.",
+        "Existing stored orders in localStorage that do not contain a customer name do not crash the UI; they are shown with an English fallback label such as \"Unknown customer\".",
+        "All user-facing text added/changed for this feature is in English."
       ]
     },
     {
-      "id": "REQ-11",
-      "text": "Remove the branding regression risk by making the logo reference unambiguous: ensure App.tsx references the corrected logo filename and that the referenced file exists in frontend/public/assets/generated.",
+      "id": "REQ-17",
+      "text": "Add an admin-only action to clear/delete the entire stored order history (localStorage orders) with in-app confirmation and feedback (no browser alert).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-6"
         ],
         "quotes": [
-          "The logo is not that same"
+          "And whe i want i can clear the history"
         ]
       },
       "acceptanceCriteria": [
-        "frontend/src/App.tsx references a logo filename that exists in frontend/public/assets/generated.",
-        "The <img> alt text remains in English and continues to describe the logo appropriately.",
-        "A hard refresh shows the corrected logo (not the old/mismatched one)."
+        "Admin sees a clearly labeled control in the Orders area (e.g., \"Clear Order History\").",
+        "Clicking the control requires an in-app confirmation step before deletion (e.g., dialog or confirm UI using existing app components; no browser alert()).",
+        "After confirmation, all orders are removed from state and from localStorage, and the Orders panel updates immediately to show the empty state.",
+        "A clear English success message is shown after clearing (and errors, if any, are shown in-app in English).",
+        "Non-admin users cannot see or trigger the clear-history action."
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "text": "On the customer product page, list/sort products by \"most selling\" (highest number of orders) using the stored order history as the source of sales counts.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "in customers product page theyer products should be listed as most selling products"
+        ]
+      },
+      "acceptanceCriteria": [
+        "In the customer Shop view, products are sorted descending by number of orders for that product (most-selling first).",
+        "If two products have the same sales count, their relative ordering remains stable and does not flicker between renders.",
+        "If there are no orders yet, the Shop view falls back to a sensible default ordering (e.g., existing stored order).",
+        "Sorting uses the same order history that the admin sees (localStorage-backed orders).",
+        "All user-facing text added/changed for this feature is in English."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files in frontend/src/components/ui (read-only UI component sources).",
-    "Do not edit immutable hook/entry paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx.",
-    "Keep backend as a single Motoko actor; no backend changes are required for this logo fix."
+    "Do not edit files under frontend/src/components/ui (read-only shadcn components).",
+    "Do not use browser alert() for confirmation or notifications; use in-app UI feedback components.",
+    "Keep persistence in browser localStorage (no external databases/services).",
+    "Backend Motoko canister should remain unused for this feature unless explicitly required; implement entirely on the frontend given current architecture."
   ],
   "nonGoals": [
-    "Do not change login behavior, product management behavior, or localStorage persistence.",
-    "Do not introduce new authentication providers or any third-party image hosting/CDN.",
-    "Do not change the app name text \"RAJESH KURKURE GARHWA\" in the header/footer/title."
+    "Do not add third-party authentication or identity providers beyond the existing login behavior.",
+    "Do not implement multi-device/server-synced order history; order history remains per-browser via localStorage.",
+    "Do not change existing admin credential rules (username \"admin\", password \"admin123\") beyond what is necessary to capture customer names."
   ],
   "imageRequirements": {
     "required": [],
-    "edits": [
-      "Replace the logo artwork so it matches the originally uploaded/provided logo (rajesh-kurkure-garhwa-logo.dim_256x256.png > rajesh-kurkure-garhwa-logo-corrected.dim_256x256.png)"
-    ]
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
+    "edits": []
   }
 }

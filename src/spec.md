@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the app header logo so it matches the originally uploaded/provided logo, using a static frontend asset.
+**Goal:** Improve order management and shopping experience by attaching customer names to orders, enabling admins to clear order history, and sorting products by most-selling.
 
 **Planned changes:**
-- Replace/update the generated logo asset so the correct logo artwork is used from `frontend/public/assets/generated`.
-- Update `frontend/src/App.tsx` to reference the corrected logo filename via a `/assets/generated/...` path (unambiguous static asset reference).
-- Ensure the logo continues to be served purely as a static frontend file (no backend image serving).
+- When a logged-in customer places an order, store the customer name (from the login username) on the saved order record in localStorage.
+- Update the Admin Orders view to display and/or clearly separate orders by customer name, with a safe fallback label (e.g., "Unknown customer") for older orders missing a customer name.
+- Add an admin-only “Clear Order History” control in the Orders area with an in-app confirmation step and in-app success/error feedback; upon confirmation, delete orders from state and localStorage and refresh the empty state immediately.
+- In the customer Shop view, sort products by most-selling (descending order count derived from stored order history), using stable ordering for ties and a sensible default ordering when no orders exist.
 
-**User-visible outcome:** On app load (including after a hard refresh), the header displays the correct, originally provided logo.
+**User-visible outcome:** Customers’ orders are saved with their names; admins can view orders separated by customer and can clear all order history with confirmation; customers see products listed with most-selling items first.

@@ -1,33 +1,34 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T15:30:16.568Z",
-  "summary": "App header logo reference was updated in frontend/src/App.tsx to point to /assets/generated/rajesh-kurkure-garhwa-logo-corrected.dim_256x256.png with English alt text. However, the diff summary shows no changes under frontend/public/assets/generated, so the existence of the corrected logo file (and therefore the ability to hard-refresh and see the corrected artwork) is not evidenced in the provided changes.",
-  "missing_requirements": [
+  "generatedAt": "2026-02-11T17:12:20.405Z",
+  "summary": "REQ-16/17/18 appear implemented: orders now include optional customerName derived from login username and persisted to localStorage; admin Orders panel groups by customer with an \"Unknown customer\" fallback; admin-only clear-history action uses an in-app AlertDialog confirmation and toast feedback; Shop view sorts products by most-selling using the same orders state with a stable tie-breaker and fallback to original ordering when no orders exist.",
+  "missing_requirements": [],
+  "hallucinated_features": [
     {
-      "id": "REQ-10",
-      "requirement": "Update the application header logo so the displayed image matches the originally uploaded/provided logo (served as a static file under frontend/public/assets/generated and referenced by a /assets/generated/... path; no backend image serving).",
-      "reason": "While App.tsx now references a /assets/generated/... path, the diff summary does not show the corrected logo asset being added/replaced under frontend/public/assets/generated, so it is not evidenced that the displayed image can actually match the originally provided logo in the build output.",
+      "description": "Added/changed general branding and footer content (logo image, \"Built with ♥ using caffeine.ai\" link) not requested by REQ-16/17/18.",
+      "reason": "BuildRequest focuses only on customer-named order history, clear history action, and most-selling sorting; branding/footer changes are outside scope.",
       "evidence": [
-        "frontend/src/App.tsx (updated src path)",
-        "File diff summary shows no modified/added files under frontend/public/assets/generated"
+        "frontend/src/App.tsx"
       ]
     },
     {
-      "id": "REQ-11",
-      "requirement": "Ensure App.tsx references the corrected logo filename and that the referenced file exists in frontend/public/assets/generated.",
-      "reason": "App.tsx references the corrected filename, but the diff summary does not include any change confirming the referenced file exists in frontend/public/assets/generated (no asset file add/modify shown).",
+      "description": "Introduced Toaster/sonner plumbing at the App root (Toaster component) beyond the explicit requirements.",
+      "reason": "REQ-16/17 mention in-app feedback but do not explicitly require adding a global Toaster; this may be pre-existing, but the diff shows it being added/used at the top level.",
       "evidence": [
-        "frontend/src/App.tsx (src=\"/assets/generated/rajesh-kurkure-garhwa-logo-corrected.dim_256x256.png\")",
-        "File diff summary: Added: 0; no public/assets changes shown"
+        "frontend/src/App.tsx"
       ]
     }
   ],
-  "hallucinated_features": [],
-  "confidence": 0.72,
+  "confidence": 0.74,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
+    "frontend/src/components/LoginView.tsx",
+    "frontend/src/components/OrdersPanel.tsx",
+    "frontend/src/components/ShopView.tsx",
+    "frontend/src/hooks/useOrders.ts",
+    "frontend/src/types/order.ts",
     "project_state.json"
   ]
 }

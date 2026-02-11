@@ -2,21 +2,30 @@ import { useState } from 'react';
 import LoginView from './components/LoginView';
 import ShopView from './components/ShopView';
 import AdminPanel from './components/AdminPanel';
+import OrdersPanel from './components/OrdersPanel';
 import { useProducts } from './hooks/useProducts';
+import { useOrders } from './hooks/useOrders';
 import { Toaster } from '@/components/ui/sonner';
 
 type UserRole = 'guest' | 'customer' | 'admin';
 
 function App() {
   const [userRole, setUserRole] = useState<UserRole>('guest');
+  const [username, setUsername] = useState<string>('');
   const [orderMessage, setOrderMessage] = useState<string>('');
   const { products, addProduct } = useProducts();
+  const { orders, addOrder, clearOrders } = useOrders();
 
-  const handleLogin = (role: UserRole) => {
+  const handleLogin = (role: UserRole, loginUsername: string) => {
     setUserRole(role);
+    setUsername(loginUsername);
   };
 
   const handleOrder = (productName: string) => {
+    // Save order to localStorage with customer name
+    addOrder(productName, username);
+    
+    // Show confirmation message
     setOrderMessage(`Order placed for ${productName}`);
     setTimeout(() => setOrderMessage(''), 3000);
   };
@@ -30,7 +39,7 @@ function App() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-center gap-4">
             <img 
-              src="/assets/generated/rajesh-kurkure-garhwa-logo-corrected.dim_256x256.png" 
+              src="/assets/generated/rajesh-kurkure-garhwa-logo-from-upload.dim_256x256.png" 
               alt="RAJESH KURKURE GARHWA logo" 
               className="w-12 h-12 object-contain"
             />
@@ -55,11 +64,17 @@ function App() {
             )}
 
             {/* Shop View */}
-            <ShopView products={products} onOrder={handleOrder} />
+            <ShopView products={products} onOrder={handleOrder} orders={orders} />
 
-            {/* Admin Panel - Only visible for admin */}
+            {/* Admin-Only Sections */}
             {userRole === 'admin' && (
-              <AdminPanel onAddProduct={addProduct} />
+              <>
+                {/* Orders Panel */}
+                <OrdersPanel orders={orders} onClearOrders={clearOrders} />
+                
+                {/* Admin Panel */}
+                <AdminPanel onAddProduct={addProduct} />
+              </>
             )}
           </div>
         )}
