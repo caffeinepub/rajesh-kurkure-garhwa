@@ -1,163 +1,16 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
-  "summary": "Single-page web app rebranded to \"RAJESH KURKURE GARHWA\" featuring customer/admin login, product browsing, admin product management, and basic ordering with product data stored in browser localStorage.",
-  "architectural_notes": [
-    "Front-end only single HTML file with embedded CSS and vanilla JS.",
-    "Uses browser localStorage key \"products\" to persist product list.",
-    "Hardcoded admin credentials: username \"admin\", password \"admin123\".",
-    "Add order persistence in browser localStorage (e.g., key \"orders\") and an admin-only UI section to list saved orders.",
-    "Extend order data model to include customer identifier/name so admin can view order history per customer.",
-    "Track per-product sales counts (derived from saved orders or stored separately) to enable 'most selling' product sorting.",
-    "Provide an admin-only control to clear orders in localStorage (and any derived sales stats if stored)."
-  ],
-  "known_issues": [
-    "Displayed application logo does not match the originally uploaded/provided logo image (branding regression).",
-    "Current in-app 'How to Add Products' guidance appears to be confusing customers and leading them to try admin login; needs removal, rewording, or admin-only visibility."
-  ],
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-create-a-single-page-react-ui-for-sudarajee-school-kurreganwa-with-three-states-1-login-screen-shown-by-default-2-shop-screen-product-list-and-3-admin-panel-only-visible-for-admin-users-all-user-facing-text-must-be-in-english",
-      "title": "Create a single-page React UI for “Sudarajee School Kurreganwa” with three states: (1) Login screen shown by default, (2) Shop screen (product list), and (3) Admin panel (only visible for admin users). All user-facing text must be in English.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-client-side-login-logic-matching-the-provided-html-behavior-if-username-is-exactly-admin-and-password-is-exactly-admin123-treat-as-admin-otherwise-treat-as-customer-only-when-both-fields-are-non-empty-otherwise-show-an-error-message-use-in-app-ui-feedback-e-g-inline-error-or-toast-dialog-rather-than-browser-alert",
-      "title": "Implement client-side login logic matching the provided HTML behavior: if username is exactly \"admin\" and password is exactly \"admin123\", treat as admin; otherwise treat as customer only when both fields are non-empty; otherwise show an error message. Use in-app UI feedback (e.g., inline error or toast/dialog) rather than browser alert().",
+      "id": "feature-add-the-mobile-number-9973279335-at-the-bottom-of-the-app-by-displaying-it-in-the-global-footer-below-the-main-content-in-english",
+      "title": "Add the mobile number \"9973279335\" at the bottom of the app by displaying it in the global footer (below the main content) in English.",
       "reqIds": [
         "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-product-persistence-in-browser-localstorage-under-a-stable-key-e-g-products-load-products-on-app-startup-render-them-in-the-shop-view-and-update-localstorage-when-an-admin-adds-a-product",
-      "title": "Implement product persistence in browser localStorage under a stable key (e.g., \"products\"): load products on app startup, render them in the Shop view, and update localStorage when an admin adds a product.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-the-shop-view-product-list-ui-each-product-shows-name-price-with-the-rupee-symbol-and-an-order-action-that-confirms-the-order-in-app-do-not-use-browser-alert",
-      "title": "Build the Shop view product list UI: each product shows name, price (with the rupee symbol), and an “Order” action that confirms the order in-app (do not use browser alert).",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-the-admin-panel-ui-for-adding-products-with-fields-for-product-name-and-price-plus-an-add-product-button-validate-that-both-fields-are-provided-on-success-add-the-product-to-the-list-and-persist-it-on-validation-failure-show-an-english-error-message-in-app-no-browser-alert",
-      "title": "Build the Admin panel UI for adding products with fields for Product Name and Price, plus an “Add Product” button. Validate that both fields are provided; on success, add the product to the list and persist it; on validation failure, show an English error message in-app (no browser alert).",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-apply-a-coherent-school-themed-visual-design-using-tailwind-avoid-a-blue-purple-color-scheme-define-consistent-typography-spacing-and-component-styling-for-header-cards-forms-and-buttons-inspired-by-the-provided-layout-header-container-product-cards",
-      "title": "Apply a coherent, school-themed visual design using Tailwind (avoid a blue/purple color scheme): define consistent typography, spacing, and component styling for header, cards, forms, and buttons, inspired by the provided layout (header + container + product cards).",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-generated-school-emblem-image-to-the-header-area-as-a-static-asset-served-from-frontend-public-assets-generated-and-referenced-directly-by-the-frontend-no-backend-image-routing",
-      "title": "Add a generated school emblem image to the header area as a static asset served from frontend/public/assets/generated and referenced directly by the frontend (no backend image routing).",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-app-branding-text-everywhere-it-appears-to-use-exactly-rajesh-kurkure-garhwa-including-the-header-title-footer-copyright-text-and-the-html-document-title",
-      "title": "Update the app branding text everywhere it appears to use exactly: \"RAJESH KURKURE GARHWA\" (including the header title, footer copyright text, and the HTML document <title>).",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-use-the-uploaded-image-as-the-application-logo-and-display-it-in-the-header-in-place-of-the-current-generated-school-emblem-image-the-logo-must-be-served-as-a-static-asset-from-frontend-public-assets-generated-and-referenced-directly-by-the-frontend-no-backend-routing",
-      "title": "Use the uploaded image as the application logo and display it in the header in place of the current generated school emblem image. The logo must be served as a static asset from frontend/public/assets/generated and referenced directly by the frontend (no backend routing).",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-application-header-logo-so-the-displayed-image-matches-the-originally-uploaded-provided-logo-the-user-reports-the-current-logo-is-not-the-same-ensure-the-header-continues-to-load-the-logo-as-a-static-asset-from-frontend-public-assets-generated-no-backend-routing",
-      "title": "Update the application header logo so the displayed image matches the originally uploaded/provided logo (the user reports the current logo is not the same). Ensure the header continues to load the logo as a static asset from frontend/public/assets/generated (no backend routing).",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-the-branding-regression-risk-by-making-the-logo-reference-unambiguous-ensure-app-tsx-references-the-corrected-logo-filename-and-that-the-referenced-file-exists-in-frontend-public-assets-generated",
-      "title": "Remove the branding regression risk by making the logo reference unambiguous: ensure App.tsx references the corrected logo filename and that the referenced file exists in frontend/public/assets/generated.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-use-the-newly-uploaded-image-screenshot-20260102-085726-whatsapp-2-jpg-as-the-application-logo-by-creating-a-production-ready-static-logo-asset-in-frontend-public-assets-generated-and-updating-the-header-to-display-that-new-asset",
-      "title": "Use the newly uploaded image (Screenshot_20260102_085726_WhatsApp-2.jpg) as the application logo by creating a production-ready static logo asset in frontend/public/assets/generated and updating the header to display that new asset.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-clear-english-in-app-guidance-explaining-how-to-add-products-including-that-only-admin-users-can-add-products-and-the-exact-steps-required-log-in-as-admin-open-the-admin-panel-enter-product-name-and-price-and-submit-the-guidance-must-be-visible-to-a-user-who-is-confused-about-adding-products-e-g-on-the-login-screen-and-or-near-the-shop-admin-area-and-must-not-rely-on-external-documentation",
-      "title": "Add clear, English in-app guidance explaining how to add products, including that only admin users can add products and the exact steps required (log in as admin, open the admin panel, enter product name and price, and submit). The guidance must be visible to a user who is confused about adding products (e.g., on the login screen and/or near the shop/admin area) and must not rely on external documentation.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-persist-customer-orders-in-browser-localstorage-and-show-an-admin-only-orders-list-so-the-admin-can-view-received-orders",
-      "title": "Persist customer orders in browser localStorage and show an admin-only Orders list so the admin can view received orders.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-or-restrict-the-visible-how-to-add-products-step-by-step-guide-so-customers-are-not-encouraged-to-log-in-as-admin-customers-must-not-see-admin-credentials-or-instructions-to-use-admin-login",
-      "title": "Remove or restrict the visible \"How to Add Products\" step-by-step guide so customers are not encouraged to log in as admin; customers must not see admin credentials or instructions to use admin login.",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-capture-and-persist-the-customer-name-for-each-placed-order-so-the-admin-can-see-order-history-separated-by-customer",
-      "title": "Capture and persist the customer name for each placed order, so the admin can see order history separated by customer.",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-an-admin-only-action-to-clear-delete-the-entire-stored-order-history-localstorage-orders-with-in-app-confirmation-and-feedback-no-browser-alert",
-      "title": "Add an admin-only action to clear/delete the entire stored order history (localStorage orders) with in-app confirmation and feedback (no browser alert).",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-on-the-customer-product-page-list-sort-products-by-most-selling-highest-number-of-orders-using-the-stored-order-history-as-the-source-of-sales-counts",
-      "title": "On the customer product page, list/sort products by \"most selling\" (highest number of orders) using the stored order history as the source of sales counts.",
-      "reqIds": [
-        "REQ-18"
       ],
       "version": 1
     }
@@ -165,67 +18,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Customer/Admin login UI with admin-only access to product management",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Product listing page with \"Order\" action per product",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Admin panel to add products (name, price)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Persist products in browser localStorage (load on startup, save on add)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Rebrand UI/app name to \"RAJESH KURKURE GARHWA\" while keeping the same logo image",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Add order tracking: save each placed order to browser localStorage and show an admin-only Order List/Orders section to view received orders",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Remove or restrict the visible 'How to Add Products' step-by-step guide so customers are not encouraged to log in as admin (make admin guidance admin-only or reword it)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Store order history with customer names (separate per customer) in the admin Orders view",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Add an admin action to clear/delete order history (orders stored in localStorage)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "On the customer product page, sort/list products by most-selling (based on order counts)",
+      "summary": "Add mobile number (9973279335) at the bottom of the app/page",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "RAJESH KURKURE GARHWA",
+  "projectName": "Add mobile number in the app footer",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

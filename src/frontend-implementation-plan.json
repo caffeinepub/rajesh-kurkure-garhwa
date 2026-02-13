@@ -1,93 +1,21 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Customer-named orders, admin clear history, and most-selling sorting (localStorage)",
+  "title": "Add mobile number to global footer",
   "requirements": [
     {
-      "id": "REQ-16",
-      "summary": "Persist customer name on each order and display/group admin order history by customer with safe fallback.",
+      "id": "REQ-2",
+      "summary": "Display the mobile number \"9973279335\" in the global footer on all pages/states.",
       "acceptanceCriteria": [
-        "When a customer is logged in and places an order, the saved order record includes the customer name (derived from the login username).",
-        "Admin orders view displays the customer name for each order and/or groups orders by customer so customers are separated clearly.",
-        "Existing stored orders in localStorage that do not contain a customer name do not crash the UI; they are shown with an English fallback label such as \"Unknown customer\".",
-        "All user-facing text added/changed for this feature is in English."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/types/order.ts",
-          "operation": "modify",
-          "description": "Extend the Order type to include an optional customerName field so legacy localStorage records remain valid (fallback handled in UI)."
-        },
-        {
-          "path": "frontend/src/components/LoginView.tsx",
-          "operation": "modify",
-          "description": "Update login flow to provide the entered username to the app (in addition to role) so orders can be attributed to the logged-in customer. Use existing shadcn-ui form components already in use; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Store the logged-in customer's username in state and pass it into order placement so addOrder can persist customerName derived from login username. Keep all newly added user-facing text in English."
-        },
-        {
-          "path": "frontend/src/hooks/useOrders.ts",
-          "operation": "modify",
-          "description": "Update addOrder to accept and persist customerName on new orders while remaining compatible with existing stored orders that lack the field."
-        },
-        {
-          "path": "frontend/src/components/OrdersPanel.tsx",
-          "operation": "modify",
-          "description": "Display customerName per order and/or group the list by customer with an English fallback label (e.g., \"Unknown customer\") when absent. Use existing shadcn-ui visual components already imported (Card/Alert/ScrollArea) to keep styling consistent; verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-17",
-      "summary": "Provide an admin-only, in-app confirmed clear-order-history action with success/error feedback.",
-      "acceptanceCriteria": [
-        "Admin sees a clearly labeled control in the Orders area (e.g., \"Clear Order History\").",
-        "Clicking the control requires an in-app confirmation step before deletion (e.g., dialog or confirm UI using existing app components; no browser alert()).",
-        "After confirmation, all orders are removed from state and from localStorage, and the Orders panel updates immediately to show the empty state.",
-        "A clear English success message is shown after clearing (and errors, if any, are shown in-app in English).",
-        "Non-admin users cannot see or trigger the clear-history action."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useOrders.ts",
-          "operation": "modify",
-          "description": "Add a clearOrders helper that clears orders state and localStorage persistence in a single in-app action, surfacing any failures via returned status/exception for UI handling."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire the admin-only clearOrders action down to the OrdersPanel (OrdersPanel only renders for admin today, keep it that way) so non-admin users cannot access the control."
-        },
-        {
-          "path": "frontend/src/components/OrdersPanel.tsx",
-          "operation": "modify",
-          "description": "Add an in-panel \"Clear Order History\" control with an in-app confirmation UI (no alert()) and show English success/error feedback inline using existing shadcn-ui primitives already used in the app (e.g., Alert/Button/Card); verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-18",
-      "summary": "Sort customer Shop products by most-selling using localStorage-backed order history with stable tie handling and sensible fallback.",
-      "acceptanceCriteria": [
-        "In the customer Shop view, products are sorted descending by number of orders for that product (most-selling first).",
-        "If two products have the same sales count, their relative ordering remains stable and does not flicker between renders.",
-        "If there are no orders yet, the Shop view falls back to a sensible default ordering (e.g., existing stored order).",
-        "Sorting uses the same order history that the admin sees (localStorage-backed orders).",
-        "All user-facing text added/changed for this feature is in English."
+        "The footer shows the text \"Mobile: 9973279335\" on all pages/states (guest, customer, admin).",
+        "The mobile number is placed within the existing footer area (no overlap with main content) and remains readable on mobile and desktop.",
+        "The displayed mobile number exactly matches: 9973279335."
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Pass the shared localStorage-backed orders data into ShopView so it can derive sales counts from the same order history the admin sees."
-        },
-        {
-          "path": "frontend/src/components/ShopView.tsx",
-          "operation": "modify",
-          "description": "Compute per-product sales counts from provided orders and render products sorted by most-selling (descending). Ensure stable ordering for ties by using original product list index as a tie-breaker, and fall back to existing ordering when there are no orders."
+          "description": "Update the existing global <footer> to include a new line/item that renders exactly \"Mobile: 9973279335\" within the footer layout (under/alongside the existing footer content) so it appears across all roles and remains readable on mobile/desktop, without modifying any files under frontend/src/components/ui."
         }
       ]
     }

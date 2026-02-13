@@ -1,12 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Improve order management and shopping experience by attaching customer names to orders, enabling admins to clear order history, and sorting products by most-selling.
+**Goal:** Display the mobile number 9973279335 in the global footer at the bottom of the app.
 
 **Planned changes:**
-- When a logged-in customer places an order, store the customer name (from the login username) on the saved order record in localStorage.
-- Update the Admin Orders view to display and/or clearly separate orders by customer name, with a safe fallback label (e.g., "Unknown customer") for older orders missing a customer name.
-- Add an admin-only “Clear Order History” control in the Orders area with an in-app confirmation step and in-app success/error feedback; upon confirmation, delete orders from state and localStorage and refresh the empty state immediately.
-- In the customer Shop view, sort products by most-selling (descending order count derived from stored order history), using stable ordering for ties and a sensible default ordering when no orders exist.
+- Update the global footer to show the text "Mobile: 9973279335" below the main content.
+- Ensure the footer text appears consistently on all pages/states (guest, customer, admin) and remains readable on mobile and desktop without overlapping content.
 
-**User-visible outcome:** Customers’ orders are saved with their names; admins can view orders separated by customer and can clear all order history with confirmation; customers see products listed with most-selling items first.
+**User-visible outcome:** Users see "Mobile: 9973279335" in the footer on every page of the app.

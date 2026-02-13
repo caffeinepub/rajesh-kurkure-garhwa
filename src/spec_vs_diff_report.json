@@ -1,34 +1,47 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T17:12:20.405Z",
-  "summary": "REQ-16/17/18 appear implemented: orders now include optional customerName derived from login username and persisted to localStorage; admin Orders panel groups by customer with an \"Unknown customer\" fallback; admin-only clear-history action uses an in-app AlertDialog confirmation and toast feedback; Shop view sorts products by most-selling using the same orders state with a stable tie-breaker and fallback to original ordering when no orders exist.",
-  "missing_requirements": [],
-  "hallucinated_features": [
+  "generatedAt": "2026-02-13T08:39:28.821Z",
+  "summary": "The BuildRequest only asks to display \"Mobile: 9973279335\" in the global footer on all pages. The diff summary suggests App.tsx was modified and mentions the footer in a generated summary file, but the provided truncated App.tsx snippet does not show any footer JSX or the exact required text, so implementation of REQ-2 cannot be verified from the included evidence. Additionally, App.tsx appears to include (or adds) admin order toast notification behavior and a Phone icon import, which are not requested by the BuildRequest.",
+  "missing_requirements": [
     {
-      "description": "Added/changed general branding and footer content (logo image, \"Built with ♥ using caffeine.ai\" link) not requested by REQ-16/17/18.",
-      "reason": "BuildRequest focuses only on customer-named order history, clear history action, and most-selling sorting; branding/footer changes are outside scope.",
+      "id": "REQ-2",
+      "requirement": "Add the mobile number \"9973279335\" at the bottom of the app by displaying it in the global footer (below the main content) in English, showing exactly \"Mobile: 9973279335\" on all pages/states.",
+      "reason": "The only code shown for frontend/src/App.tsx is truncated before any footer markup; there is no visible JSX proving that a global footer exists/was modified to include the exact text \"Mobile: 9973279335\" across all app states. The separate frontend-file-summaries.txt claims it exists, but that is not the actual component implementation.",
       "evidence": [
-        "frontend/src/App.tsx"
-      ]
-    },
-    {
-      "description": "Introduced Toaster/sonner plumbing at the App root (Toaster component) beyond the explicit requirements.",
-      "reason": "REQ-16/17 mention in-app feedback but do not explicitly require adding a global Toaster; this may be pre-existing, but the diff shows it being added/used at the top level.",
-      "evidence": [
-        "frontend/src/App.tsx"
+        "frontend/src/App.tsx (truncated)",
+        "frontend-file-summaries.txt"
       ]
     }
   ],
-  "confidence": 0.74,
+  "hallucinated_features": [
+    {
+      "description": "Admin new-order toast notifications (same-tab detection via state changes and cross-tab detection via storage events).",
+      "reason": "Not requested; BuildRequest explicitly focuses only on displaying a phone number in the footer and has non-goals around adding extra functionality beyond displaying the number.",
+      "evidence": [
+        "frontend/src/App.tsx (truncated)",
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Import/use of a Phone icon (lucide-react).",
+      "reason": "Not requested by REQ-2; only the text \"Mobile: 9973279335\" is required.",
+      "evidence": [
+        "frontend/src/App.tsx (truncated)"
+      ]
+    },
+    {
+      "description": "Updating project tracking metadata (project_state.json) to add/track feature request items AR-1/AR-2 as pending.",
+      "reason": "Not part of the functional requirement to render the number in the footer; the BuildRequest does not request project state bookkeeping changes.",
+      "evidence": [
+        "project_state.json"
+      ]
+    }
+  ],
+  "confidence": 0.62,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
-    "frontend/src/components/LoginView.tsx",
-    "frontend/src/components/OrdersPanel.tsx",
-    "frontend/src/components/ShopView.tsx",
-    "frontend/src/hooks/useOrders.ts",
-    "frontend/src/types/order.ts",
     "project_state.json"
   ]
 }

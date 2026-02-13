@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Order } from '../types/order';
 
-const ORDERS_KEY = 'orders';
+export const ORDERS_KEY = 'orders';
 
 export function useOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
