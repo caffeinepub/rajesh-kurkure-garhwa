@@ -5,7 +5,7 @@ import AdminPanel from './components/AdminPanel';
 import OrdersPanel from './components/OrdersPanel';
 import { useProducts } from './hooks/useProducts';
 import { useOrders, ORDERS_KEY } from './hooks/useOrders';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 import { Phone } from 'lucide-react';
 
@@ -15,7 +15,7 @@ function App() {
   const [userRole, setUserRole] = useState<UserRole>('guest');
   const [username, setUsername] = useState<string>('');
   const [orderMessage, setOrderMessage] = useState<string>('');
-  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
+  const { products, addProduct, updateProduct, deleteProduct, isLoading, error } = useProducts();
   const { orders, addOrder, clearOrders } = useOrders();
   
   // Track previous order count for detecting new orders
@@ -35,6 +35,13 @@ function App() {
     setOrderMessage(`Order placed for ${productName}`);
     setTimeout(() => setOrderMessage(''), 3000);
   };
+
+  // Handle product fetch errors
+  useEffect(() => {
+    if (error) {
+      toast.error('Failed to load products. Please refresh the page.');
+    }
+  }, [error]);
 
   // Detect new orders in same tab (via state changes)
   useEffect(() => {
@@ -136,7 +143,7 @@ function App() {
             )}
 
             {/* Shop View */}
-            <ShopView products={products} onOrder={handleOrder} orders={orders} />
+            <ShopView products={products} onOrder={handleOrder} orders={orders} isLoading={isLoading} />
 
             {/* Admin-Only Sections */}
             {userRole === 'admin' && (

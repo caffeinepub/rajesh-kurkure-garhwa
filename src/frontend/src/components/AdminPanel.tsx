@@ -1,21 +1,21 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Plus, Pencil, Trash2, Upload, X } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/alert-dialog';
+import { Plus, Pencil, Trash2, Upload, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Product } from '../types/product';
 import HowToAddProducts from './HowToAddProducts';
 
 interface AdminPanelProps {
   products: Product[];
-  onAddProduct: (product: Omit<Product, 'id'>) => void;
-  onUpdateProduct: (id: string, updates: Partial<Omit<Product, 'id'>>) => void;
-  onDeleteProduct: (id: string) => void;
+  onAddProduct: (product: Omit<Product, 'id'>) => Promise<Product>;
+  onUpdateProduct: (id: string, updates: Partial<Omit<Product, 'id'>>) => Promise<Product>;
+  onDeleteProduct: (id: string) => Promise<string>;
 }
 
 export default function AdminPanel({ products, onAddProduct, onUpdateProduct, onDeleteProduct }: AdminPanelProps) {
@@ -23,6 +23,7 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
   const [price, setPrice] = useState('');
   const [image, setImage] = useState<string | undefined>(undefined);
   const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Edit dialog state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -30,6 +31,8 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
   const [editPrice, setEditPrice] = useState('');
   const [editImage, setEditImage] = useState<string | undefined>(undefined);
   const [editImagePreview, setEditImagePreview] = useState<string | undefined>(undefined);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean = false) => {
     const file = e.target.files?.[0];
@@ -71,7 +74,7 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate fields
@@ -86,13 +89,21 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
       return;
     }
 
-    // Add product
-    onAddProduct({ name: name.trim(), price: price.trim(), image });
-    toast.success('Product added successfully!');
-    setName('');
-    setPrice('');
-    setImage(undefined);
-    setImagePreview(undefined);
+    setIsSubmitting(true);
+    try {
+      // Add product (async)
+      await onAddProduct({ name: name.trim(), price: price.trim(), image });
+      toast.success('Product added successfully!');
+      setName('');
+      setPrice('');
+      setImage(undefined);
+      setImagePreview(undefined);
+    } catch (error) {
+      console.error('Failed to add product:', error);
+      toast.error('Failed to add product. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const openEditDialog = (product: Product) => {
@@ -101,9 +112,10 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
     setEditPrice(product.price);
     setEditImage(product.image);
     setEditImagePreview(product.image);
+    setIsEditDialogOpen(true);
   };
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     if (!editingProduct) return;
 
     // Validate fields
@@ -118,24 +130,126 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
       return;
     }
 
-    // Update product
-    onUpdateProduct(editingProduct.id, {
-      name: editName.trim(),
-      price: editPrice.trim(),
-      image: editImage,
-    });
-    toast.success('Product updated successfully!');
-    setEditingProduct(null);
+    setIsUpdating(true);
+    try {
+      // Update product (async)
+      await onUpdateProduct(editingProduct.id, {
+        name: editName.trim(),
+        price: editPrice.trim(),
+        image: editImage,
+      });
+      toast.success('Product updated successfully!');
+      setIsEditDialogOpen(false);
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Failed to update product:', error);
+      toast.error('Failed to update product. Please try again.');
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
-  const handleDelete = (product: Product) => {
-    onDeleteProduct(product.id);
-    toast.success(`${product.name} deleted successfully!`);
+  const handleDelete = async (product: Product) => {
+    try {
+      await onDeleteProduct(product.id);
+      toast.success(`${product.name} deleted successfully!`);
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+      toast.error('Failed to delete product. Please try again.');
+    }
   };
 
   return (
     <div className="space-y-6">
       <HowToAddProducts />
+
+      {/* Add New Product Form */}
+      <Card className="border-primary/20 shadow-lg">
+        <CardHeader className="bg-primary/5">
+          <CardTitle className="text-2xl flex items-center gap-2">
+            <Plus className="w-6 h-6" />
+            Add New Product
+          </CardTitle>
+          <CardDescription>Fill in the details to add a new product</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Product Name</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter product name"
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="price">Price (₹)</Label>
+              <Input
+                id="price"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="Enter price"
+                step="0.01"
+                min="0"
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="image">Product Image (Optional)</Label>
+              <div className="flex flex-col gap-2">
+                {imagePreview && (
+                  <div className="relative w-32 h-32 border rounded-lg overflow-hidden">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1 h-6 w-6"
+                      onClick={() => clearImage(false)}
+                      disabled={isSubmitting}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, false)}
+                    className="flex-1"
+                    disabled={isSubmitting}
+                  />
+                  <Button type="button" variant="outline" size="icon" disabled={isSubmitting}>
+                    <Upload className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Adding Product...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Product
+                </>
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
       {/* Existing Products List */}
       {products.length > 0 && (
@@ -175,84 +289,13 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
                       <TableCell>₹{product.price}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openEditDialog(product)}
-                              >
-                                <Pencil className="w-4 h-4" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Edit Product</DialogTitle>
-                                <DialogDescription>
-                                  Update product details
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="space-y-4 py-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="edit-name">Product Name</Label>
-                                  <Input
-                                    id="edit-name"
-                                    value={editName}
-                                    onChange={(e) => setEditName(e.target.value)}
-                                    placeholder="Enter product name"
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="edit-price">Price (₹)</Label>
-                                  <Input
-                                    id="edit-price"
-                                    type="number"
-                                    value={editPrice}
-                                    onChange={(e) => setEditPrice(e.target.value)}
-                                    placeholder="Enter price"
-                                    step="0.01"
-                                    min="0"
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="edit-image">Product Image</Label>
-                                  {editImagePreview ? (
-                                    <div className="relative">
-                                      <img
-                                        src={editImagePreview}
-                                        alt="Preview"
-                                        className="w-full h-48 object-cover rounded-lg"
-                                      />
-                                      <Button
-                                        type="button"
-                                        variant="destructive"
-                                        size="sm"
-                                        className="absolute top-2 right-2"
-                                        onClick={() => clearImage(true)}
-                                      >
-                                        <X className="w-4 h-4" />
-                                      </Button>
-                                    </div>
-                                  ) : (
-                                    <div className="flex items-center gap-2">
-                                      <Input
-                                        id="edit-image"
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleImageUpload(e, true)}
-                                        className="flex-1"
-                                      />
-                                      <Upload className="w-5 h-5 text-muted-foreground" />
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              <DialogFooter>
-                                <Button onClick={handleEdit}>Save Changes</Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditDialog(product)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="destructive" size="sm">
@@ -268,7 +311,10 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(product)}>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(product)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
                                   Delete
                                 </AlertDialogAction>
                               </AlertDialogFooter>
@@ -285,88 +331,98 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
         </Card>
       )}
 
-      {/* Add New Product Form */}
-      <Card className="border-primary/20 shadow-lg">
-        <CardHeader className="bg-primary/5">
-          <CardTitle className="text-2xl flex items-center gap-2">
-            <Plus className="w-6 h-6" />
-            Add Product (Admin)
-          </CardTitle>
-          <CardDescription>
-            Add new products to the shop inventory
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Product</DialogTitle>
+            <DialogDescription>
+              Update product details
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="productName">Product Name</Label>
+              <Label htmlFor="edit-name">Product Name</Label>
               <Input
-                id="productName"
-                type="text"
+                id="edit-name"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
                 placeholder="Enter product name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full"
+                disabled={isUpdating}
               />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="productPrice">Price (₹)</Label>
+              <Label htmlFor="edit-price">Price (₹)</Label>
               <Input
-                id="productPrice"
+                id="edit-price"
                 type="number"
+                value={editPrice}
+                onChange={(e) => setEditPrice(e.target.value)}
                 placeholder="Enter price"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="w-full"
                 step="0.01"
                 min="0"
+                disabled={isUpdating}
               />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="productImage">Product Image (Optional)</Label>
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="w-full h-48 object-cover rounded-lg"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={() => clearImage()}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ) : (
+              <Label htmlFor="edit-image">Product Image (Optional)</Label>
+              <div className="flex flex-col gap-2">
+                {editImagePreview && (
+                  <div className="relative w-32 h-32 border rounded-lg overflow-hidden">
+                    <img
+                      src={editImagePreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1 h-6 w-6"
+                      onClick={() => clearImage(true)}
+                      disabled={isUpdating}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
                 <div className="flex items-center gap-2">
                   <Input
-                    id="productImage"
+                    id="edit-image"
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleImageUpload(e)}
+                    onChange={(e) => handleImageUpload(e, true)}
                     className="flex-1"
+                    disabled={isUpdating}
                   />
-                  <Upload className="w-5 h-5 text-muted-foreground" />
+                  <Button type="button" variant="outline" size="icon" disabled={isUpdating}>
+                    <Upload className="w-4 h-4" />
+                  </Button>
                 </div>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Maximum file size: 2MB. Supported formats: JPG, PNG, GIF
-              </p>
+              </div>
             </div>
-
-            <Button type="submit" className="w-full" size="lg">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Product
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDialogOpen(false)}
+              disabled={isUpdating}
+            >
+              Cancel
             </Button>
-          </form>
-        </CardContent>
-      </Card>
+            <Button onClick={handleEdit} disabled={isUpdating}>
+              {isUpdating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

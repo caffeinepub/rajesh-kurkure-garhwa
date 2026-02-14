@@ -1,47 +1,76 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T08:39:28.821Z",
-  "summary": "The BuildRequest only asks to display \"Mobile: 9973279335\" in the global footer on all pages. The diff summary suggests App.tsx was modified and mentions the footer in a generated summary file, but the provided truncated App.tsx snippet does not show any footer JSX or the exact required text, so implementation of REQ-2 cannot be verified from the included evidence. Additionally, App.tsx appears to include (or adds) admin order toast notification behavior and a Phone icon import, which are not requested by the BuildRequest.",
+  "generatedAt": "2026-02-14T09:14:07.017Z",
+  "summary": "Backend CRUD and frontend React Query hook were added, but key persistence and data-model requirements for stable storage (and Text-typed fields) are not met. Several unrequested UI/theme/order-related changes and an extra backend file were introduced, conflicting with constraints.",
   "missing_requirements": [
     {
-      "id": "REQ-2",
-      "requirement": "Add the mobile number \"9973279335\" at the bottom of the app by displaying it in the global footer (below the main content) in English, showing exactly \"Mobile: 9973279335\" on all pages/states.",
-      "reason": "The only code shown for frontend/src/App.tsx is truncated before any footer markup; there is no visible JSX proving that a global footer exists/was modified to include the exact text \"Mobile: 9973279335\" across all app states. The separate frontend-file-summaries.txt claims it exists, but that is not the actual component implementation.",
+      "id": "REQ-3",
+      "requirement": "Implement persistent product storage in `backend/main.mo` using stable state so products are saved permanently across canister upgrades; Product model fields must be persisted as id (Text), name (Text), price (Text), image (optional Text); all backend logic contained in `backend/main.mo` (single-actor architecture).",
+      "reason": "`backend/main.mo` uses in-memory `var nextId` and `let productMap = Map.empty...` with no `stable var` / `preupgrade` / `postupgrade` shown, so data will not persist across upgrades. Additionally, Product fields are typed as `Nat` for `id`/`price` rather than `Text`, and a separate `backend/migration.mo` file was added which conflicts with the “all logic in backend/main.mo” constraint.",
       "evidence": [
-        "frontend/src/App.tsx (truncated)",
-        "frontend-file-summaries.txt"
+        "backend/main.mo",
+        "backend/migration.mo"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Expose product CRUD/read APIs in `backend/main.mo`: list/get all products (query), create product (update) returning created product with generated unique id, update by id (update) returning updated product or clear not-found result, delete by id returning success/not-found; changes reflected immediately in list.",
+      "reason": "While APIs exist, the update method returns `Bool` instead of returning the updated product (or a structured not-found result) as required. Also the model uses `Nat` ids rather than the required stable Text ids.",
+      "evidence": [
+        "backend/main.mo"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Admin new-order toast notifications (same-tab detection via state changes and cross-tab detection via storage events).",
-      "reason": "Not requested; BuildRequest explicitly focuses only on displaying a phone number in the footer and has non-goals around adding extra functionality beyond displaying the number.",
+      "description": "Added a separate backend migration module/file (`backend/migration.mo`) and wired it via `(with migration = Migration.run)`.",
+      "reason": "Not requested; also conflicts with the constraint that the backend must remain a single Motoko actor with all logic in `backend/main.mo`.",
       "evidence": [
-        "frontend/src/App.tsx (truncated)",
+        "backend/migration.mo",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "description": "Changed product price semantics/formatting to store/display price as scaled integer “paise/cents” (multiply by 100) via new mapping utilities.",
+      "reason": "Not requested by the BuildRequest (which specified `price` as `Text` persisted by backend). This is a new behavioral change to pricing representation.",
+      "evidence": [
+        "frontend/src/lib/productMapping.ts"
+      ]
+    },
+    {
+      "description": "Added/expanded admin new-order toast notifications and cross-tab order detection logic in `App.tsx`.",
+      "reason": "Order persistence/behavior changes are explicitly a non-goal; these order-related enhancements were not requested.",
+      "evidence": [
+        "frontend/src/App.tsx"
+      ]
+    },
+    {
+      "description": "UI/theme and content changes (e.g., global styles palette changes, Tailwind theme extensions, and index.html title update).",
+      "reason": "Not requested as part of product persistence/CRUD work.",
+      "evidence": [
         "frontend-file-summaries.txt"
       ]
     },
     {
-      "description": "Import/use of a Phone icon (lucide-react).",
-      "reason": "Not requested by REQ-2; only the text \"Mobile: 9973279335\" is required.",
+      "description": "Added a new instructional component `HowToAddProducts` and referenced it from AdminPanel.",
+      "reason": "Not requested by the BuildRequest; adds new UI/feature content beyond wiring existing components to backend products.",
       "evidence": [
-        "frontend/src/App.tsx (truncated)"
-      ]
-    },
-    {
-      "description": "Updating project tracking metadata (project_state.json) to add/track feature request items AR-1/AR-2 as pending.",
-      "reason": "Not part of the functional requirement to render the number in the footer; the BuildRequest does not request project state bookkeeping changes.",
-      "evidence": [
-        "project_state.json"
+        "frontend/src/components/HowToAddProducts.tsx",
+        "frontend/src/components/AdminPanel.tsx"
       ]
     }
   ],
-  "confidence": 0.62,
+  "confidence": 0.78,
   "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
+    "frontend/src/components/AdminPanel.tsx",
+    "frontend/src/components/ShopView.tsx",
+    "frontend/src/hooks/useProducts.ts",
+    "frontend/src/lib/productMapping.ts",
     "project_state.json"
   ]
 }

@@ -1,82 +1,110 @@
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useActor } from './useActor';
 import type { Product } from '../types/product';
+import { backendToUIProduct, uiToBackendProductData } from '../lib/productMapping';
 
-const STORAGE_KEY = 'products';
+const PRODUCTS_QUERY_KEY = ['products'];
 
-// Helper to generate unique IDs
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-}
-
-// Helper to migrate legacy products to new format
-function migrateProducts(stored: any[]): Product[] {
-  return stored.map((item) => {
-    // If already has id, return as-is
-    if (item.id) {
-      return item as Product;
-    }
-    // Legacy product without id - add one
-    return {
-      id: generateId(),
-      name: item.name,
-      price: item.price,
-      image: item.image,
-    };
-  });
-}
-
+/**
+ * Custom hook for managing products with backend persistence via React Query
+ */
 export function useProducts() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const { actor, isFetching: isActorLoading } = useActor();
+  const queryClient = useQueryClient();
 
-  // Load products from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          const migrated = migrateProducts(parsed);
-          setProducts(migrated);
-          // Save migrated data back
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load products from localStorage:', error);
-    }
-  }, []);
+  // Query: Fetch all products from backend
+  const {
+    data: products = [],
+    isLoading,
+    error: fetchError,
+  } = useQuery<Product[]>({
+    queryKey: PRODUCTS_QUERY_KEY,
+    queryFn: async () => {
+      if (!actor) return [];
+      const backendProducts = await actor.getAllProducts();
+      return backendProducts.map(backendToUIProduct);
+    },
+    enabled: !!actor && !isActorLoading,
+  });
 
-  // Save products to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-    } catch (error) {
-      console.error('Failed to save products to localStorage:', error);
-    }
-  }, [products]);
+  // Mutation: Add product
+  const addProductMutation = useMutation({
+    mutationFn: async (product: Omit<Product, 'id'>) => {
+      if (!actor) throw new Error('Backend actor not initialized');
+      const backendData = uiToBackendProductData(product);
+      const createdProduct = await actor.addProduct(
+        backendData.name,
+        backendData.price,
+        backendData.image
+      );
+      return backendToUIProduct(createdProduct);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
+    },
+  });
 
-  const addProduct = (product: Omit<Product, 'id'>) => {
-    const newProduct: Product = {
-      ...product,
-      id: generateId(),
-    };
-    setProducts((prev) => [...prev, newProduct]);
-  };
+  // Mutation: Update product
+  const updateProductMutation = useMutation({
+    mutationFn: async ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: Partial<Omit<Product, 'id'>>;
+    }) => {
+      if (!actor) throw new Error('Backend actor not initialized');
 
-  const updateProduct = (id: string, updates: Partial<Omit<Product, 'id'>>) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updates } : p))
-    );
-  };
+      // Find current product to merge updates
+      const currentProduct = products.find((p) => p.id === id);
+      if (!currentProduct) throw new Error('Product not found');
 
-  const deleteProduct = (id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-  };
+      const updatedProduct = { ...currentProduct, ...updates };
+      const backendData = uiToBackendProductData(updatedProduct);
+
+      const success = await actor.updateProduct(
+        BigInt(id),
+        backendData.name,
+        backendData.price,
+        backendData.image
+      );
+
+      if (!success) throw new Error('Failed to update product');
+      return updatedProduct;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
+    },
+  });
+
+  // Mutation: Delete product
+  const deleteProductMutation = useMutation({
+    mutationFn: async (id: string) => {
+      if (!actor) throw new Error('Backend actor not initialized');
+      const success = await actor.deleteProduct(BigInt(id));
+      if (!success) throw new Error('Product not found');
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
+    },
+  });
 
   return {
     products,
-    addProduct,
-    updateProduct,
-    deleteProduct,
+    isLoading,
+    error: fetchError,
+    addProduct: async (product: Omit<Product, 'id'>) => {
+      return addProductMutation.mutateAsync(product);
+    },
+    updateProduct: async (id: string, updates: Partial<Omit<Product, 'id'>>) => {
+      return updateProductMutation.mutateAsync({ id, updates });
+    },
+    deleteProduct: async (id: string) => {
+      return deleteProductMutation.mutateAsync(id);
+    },
+    isAddingProduct: addProductMutation.isPending,
+    isUpdatingProduct: updateProductMutation.isPending,
+    isDeletingProduct: deleteProductMutation.isPending,
   };
 }

@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { ShoppingCart, Package, Search } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { ShoppingCart, Package, Search, Loader2 } from 'lucide-react';
 import type { Product } from '../types/product';
 import type { Order } from '../types/order';
 
@@ -10,9 +10,10 @@ interface ShopViewProps {
   products: Product[];
   onOrder: (productName: string) => void;
   orders: Order[];
+  isLoading?: boolean;
 }
 
-export default function ShopView({ products, onOrder, orders }: ShopViewProps) {
+export default function ShopView({ products, onOrder, orders, isLoading = false }: ShopViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Step 1: Sort products by most-selling (descending)
@@ -57,6 +58,26 @@ export default function ShopView({ products, onOrder, orders }: ShopViewProps) {
 
   const hasProducts = products.length > 0;
   const hasFilteredResults = filteredProducts.length > 0;
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <ShoppingCart className="w-8 h-8 text-primary" />
+          <h2 className="text-3xl font-bold">Products</h2>
+        </div>
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
+            <p className="text-lg text-muted-foreground text-center">
+              Loading products...
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

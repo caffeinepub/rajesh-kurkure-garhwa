@@ -1,18 +1,58 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T08:39:28.823Z",
+  "generatedAt": "2026-02-14T09:14:07.021Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 5,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-2",
-        "summary": "Add the mobile number \"9973279335\" at the bottom of the app by displaying it in the global footer (below the main content) in English.",
+        "id": "REQ-3",
+        "summary": "Implement persistent product storage in `backend/main.mo` using stable state so products are saved permanently across canister upgrades (the current actor is empty). Add a Product data model compatible with the frontend (`id`, `name`, `price`, optional `image` as text) and store the full product list in stable storage.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Expose backend CRUD + read APIs for products from `backend/main.mo`: list/get all products (query), create product (update), update product by id (update), delete product by id (update). Ensure IDs are unique and stable for each created product.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Update the frontend product data flow to use the backend product APIs instead of `localStorage`. Replace the current `useProducts` hook behavior (which reads/writes `localStorage`) with backend-backed fetching and mutations (using React Query) so product changes are shared across devices/browsers and persist permanently.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useProducts.ts",
+          "frontend/src/lib/productMapping.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useProducts.ts",
+          "frontend/src/lib/productMapping.ts"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Wire the existing UI components to the backend-backed products hook so existing admin/shop behaviors remain the same: `App.tsx` continues to pass `products`, `addProduct`, `updateProduct`, `deleteProduct` to `ShopView` and `AdminPanel`, but these operations now call the backend and keep UI state in sync (including loading/error handling with user-friendly English messages).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/AdminPanel.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/AdminPanel.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Verify build/deploy succeeds after these changes and the app retains the existing global footer content, including the English text \"Mobile: 9973279335\" in the footer.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/App.tsx"
@@ -24,11 +64,21 @@
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/AdminPanel.tsx",
+    "frontend/src/components/ShopView.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useProducts.ts",
+    "frontend/src/lib/productMapping.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

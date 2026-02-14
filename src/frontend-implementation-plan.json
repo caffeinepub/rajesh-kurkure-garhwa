@@ -1,21 +1,63 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add mobile number to global footer",
+  "title": "Frontend: Replace localStorage products with backend-backed React Query flow",
   "requirements": [
     {
-      "id": "REQ-2",
-      "summary": "Display the mobile number \"9973279335\" in the global footer on all pages/states.",
+      "id": "REQ-5",
+      "summary": "Replace localStorage-based product persistence with backend-backed React Query fetching and mutations in useProducts.",
       "acceptanceCriteria": [
-        "The footer shows the text \"Mobile: 9973279335\" on all pages/states (guest, customer, admin).",
-        "The mobile number is placed within the existing footer area (no overlap with main content) and remains readable on mobile and desktop.",
-        "The displayed mobile number exactly matches: 9973279335."
+        "Refreshing the page does not lose products (products reload from the backend).",
+        "Adding/editing/deleting a product in the Admin panel persists after a full page reload and on a different browser session.",
+        "`frontend/src/hooks/useProducts.ts` no longer depends on `localStorage` for persistence.",
+        "Product image upload (data URL string) continues to work end-to-end (saved and returned by backend)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useProducts.ts",
+          "operation": "modify",
+          "description": "Rewrite the hook to use React Query + the existing backend actor (via useActor) to load products from the backend and perform add/update/delete mutations; remove all localStorage reads/writes and local ID generation, and ensure image values are passed through as data URL strings (string|null) and returned to the UI."
+        },
+        {
+          "path": "frontend/src/lib/productMapping.ts",
+          "operation": "create",
+          "description": "Add small mapping helpers to convert between backend Product types (e.g., bigint id/price and optional image) and the UI Product type (string id/price and optional image), including safe parsing/formatting and null/undefined handling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Keep existing Shop/Admin UI behavior while wiring them to the backend-backed products hook with friendly loading/error handling.",
+      "acceptanceCriteria": [
+        "ShopView displays the backend product list correctly.",
+        "AdminPanel add/edit/delete operations update the UI list and remain consistent after reload.",
+        "If a backend call fails, the UI shows an English error message (e.g., toast) and does not corrupt the local UI state."
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Update the existing global <footer> to include a new line/item that renders exactly \"Mobile: 9973279335\" within the footer layout (under/alongside the existing footer content) so it appears across all roles and remains readable on mobile/desktop, without modifying any files under frontend/src/components/ui."
+          "description": "Update App to consume the new useProducts return shape (backend-backed), continue passing `products`, `addProduct`, `updateProduct`, `deleteProduct` into ShopView/AdminPanel, and surface user-friendly English error handling (e.g., toast) for product load/mutation failures while keeping UI state consistent."
+        },
+        {
+          "path": "frontend/src/components/AdminPanel.tsx",
+          "operation": "modify",
+          "description": "Adjust AdminPanel to support async add/edit/delete handlers (await results before showing success toasts), and show clear English error toasts when an operation fails; ensure image upload continues to pass a data URL string into the add/update calls."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Ensure the frontend still builds and retains the existing footer content including the mobile number text.",
+      "acceptanceCriteria": [
+        "Project compiles and deploys successfully.",
+        "The footer still shows \"Mobile: 9973279335\" at the bottom of the app."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Verify the existing footer markup and the exact English text \"Mobile: 9973279335\" remains unchanged while integrating the updated products data flow."
         }
       ]
     }
