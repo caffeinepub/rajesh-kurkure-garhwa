@@ -4,54 +4,37 @@
   "summary": "New project",
   "architectural_notes": [],
   "known_issues": [
-    "Deployment failed during build/deploy pipeline (needs investigation and fix)."
+    "Reported regression/bug: saving a product still does not work (price behavior/data save still incorrect) after Version 16 release."
   ],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-investigate-and-fix-the-root-cause-of-the-build-deploy-pipeline-failure-so-the-project-compiles-and-deploys-successfully",
-      "title": "Investigate and fix the root cause of the build/deploy pipeline failure so the project compiles and deploys successfully.",
+      "id": "feature-fix-the-product-price-mapping-so-that-prices-are-stored-in-the-backend-as-integer-paise-cents-but-displayed-and-edited-in-the-ui-as-rupees-with-2-decimal-places-ensuring-a-product-saved-from-adminpanel-shows-the-same-price-when-reloaded",
+      "title": "Fix the product price mapping so that prices are stored in the backend as integer paise (cents) but displayed and edited in the UI as rupees with 2 decimal places, ensuring a product saved from AdminPanel shows the same price when reloaded.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-keep-all-existing-user-facing-text-in-english-and-ensure-the-existing-global-footer-content-remains-unchanged-including-the-text-mobile-9973279335",
-      "title": "Keep all existing user-facing text in English and ensure the existing global footer content remains unchanged, including the text \"Mobile: 9973279335\".",
+      "id": "feature-fix-the-frontend-update-product-data-conversion-to-avoid-passing-an-object-that-includes-an-id-field-into-uitobackendproductdata-which-expects-omit-product-id-and-ensure-add-update-delete-product-mutations-reliably-call-the-backend-with-correctly-typed-arguments",
+      "title": "Fix the frontend update-product data conversion to avoid passing an object that includes an `id` field into `uiToBackendProductData` (which expects `Omit<Product, 'id'>`), and ensure add/update/delete product mutations reliably call the backend with correctly typed arguments.",
       "reqIds": [
-        "REQ-5"
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-improve-error-visibility-for-failed-product-save-update-delete-operations-by-surfacing-the-underlying-error-message-when-available-in-the-ui-toast-and-console-so-failures-are-diagnosable-without-guessing",
+      "title": "Improve error visibility for failed product save/update/delete operations by surfacing the underlying error message (when available) in the UI toast and console, so failures are diagnosable without guessing.",
+      "reqIds": [
+        "REQ-3"
       ],
       "version": 1
     }
   ],
-  "new_feature_requests": [
-    {
-      "id": "AR-2",
-      "summary": "Make `backend/main.mo` compile reliably on the Internet Computer toolchain by replacing the current `mo:core/Map` usage and any non-compiling Map operations with a supported, correct data structure and APIs (while preserving the existing product CRUD interface semantics).",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Implement stable, upgrade-safe persistence for products and `nextId` in the single Motoko actor so product data is retained across canister upgrades/redeploys.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Ensure the backend upgrade/migration setup is consistent with the project’s migration policy (conditional) by providing/repairing `backend/migration.mo` (and any required wiring) so state initialization/upgrade does not break deployment.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "status": "pending"
-    }
-  ],
-  "projectName": "Fix deployment failure by correcting Motoko backend persistence and migration wiring",
+  "new_feature_requests": [],
+  "projectName": "Fix product saving and price formatting regression",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

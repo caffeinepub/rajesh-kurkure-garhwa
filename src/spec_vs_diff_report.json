@@ -1,127 +1,56 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T03:53:19.996Z",
-  "summary": "The diff adds a new backend migration module and modifies the backend actor and frontend App, but it does not clearly implement the requested Motoko Map replacement or stable, upgrade-safe persistence. It also introduces multiple frontend features and changes beyond the deployment-fix scope.",
+  "generatedAt": "2026-02-15T04:39:40.617Z",
+  "summary": "REQ-1 appears largely implemented via a backend schema change to store prices as integer paise (pricePaise) plus frontend mapping functions that convert paise<->rupees with 2 decimals. However, REQ-2 is not correctly implemented: the update mutation still passes an object that includes `id` into `uiToBackendProductData`, which is typed to accept `Omit<Product,'id'>`. REQ-3 has partial evidence (console logging in hook, new getErrorMessage helper), but the diff is truncated for AdminPanel’s toast handling for all operations, so full UI/console error-surfacing for add/update/delete cannot be confirmed.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Fix the root cause of the build/deploy pipeline failure so the project compiles and deploys successfully.",
-      "reason": "The backend changes appear to still rely on `mo:core/Map` and Map methods (`empty`, `add`, `remove`, `values().toArray()`) that are commonly non-compiling/unsupported in many Motoko toolchains, so the diff does not provide evidence that `dfx build` / deployment will succeed.",
-      "evidence": [
-        "backend/main.mo",
-        "backend/migration.mo"
-      ]
-    },
-    {
       "id": "REQ-2",
-      "requirement": "Replace current `mo:core/Map` usage and any non-compiling Map operations with a supported, correct data structure and APIs (preserving the product CRUD interface semantics).",
-      "reason": "`backend/main.mo` still imports and uses `mo:core/Map` and uses Map operations (`Map.empty`, `productMap.add`, `productMap.remove`, `productMap.values().toArray()`) rather than replacing Map with a supported structure.",
+      "requirement": "Fix the frontend update-product data conversion to avoid passing an object that includes an `id` field into `uiToBackendProductData` (expects `Omit<Product, 'id'>`), and ensure add/update/delete product mutations reliably call the backend with correctly typed arguments.",
+      "reason": "The update mutation constructs `updatedProduct` by merging `{ ...currentProduct, ...updates }`, which includes `id`, then passes it directly into `uiToBackendProductData(updatedProduct)`. This contradicts the function signature shown in productMapping.ts and likely preserves the original TypeScript type error mentioned in the requirement.",
       "evidence": [
-        "backend/main.mo"
+        "frontend/src/hooks/useProducts.ts",
+        "frontend/src/lib/productMapping.ts"
       ]
     },
     {
       "id": "REQ-3",
-      "requirement": "Implement stable, upgrade-safe persistence for products and `nextId` so data is retained across canister upgrades/redeploys.",
-      "reason": "`nextId` and `productMap` are declared as non-stable `var` fields with no shown `stable var` state, preupgrade/postupgrade hooks, or other demonstrated persistence mechanism in `backend/main.mo`.",
+      "requirement": "Improve error visibility for failed product save/update/delete operations by surfacing the underlying error message (when available) in the UI toast and console.",
+      "reason": "Console logging is present in the React Query mutations, and a `getErrorMessage` helper was added, but the AdminPanel implementation that should show the underlying error message in toast for add/update/delete is truncated; the diff summary only clearly shows toast usage for validation and success, and a partial catch block for add. There is not enough complete evidence that update/delete failures surface the underlying message in toasts as required.",
       "evidence": [
-        "backend/main.mo"
+        "frontend/src/components/AdminPanel.tsx (truncated)",
+        "frontend/src/hooks/useProducts.ts",
+        "frontend/src/lib/utils.ts"
       ]
-    },
+    }
+  ],
+  "hallucinated_features": [
     {
-      "id": "REQ-4",
-      "requirement": "Provide/repair `backend/migration.mo` and wiring consistent with the conditional migration policy so upgrades do not trap and state needs are met.",
-      "reason": "The added `backend/migration.mo` defines `State` containing a `Map.Map` and `run` is a no-op; the diff does not show conditional migration logic or alignment with stable-state needs (especially since stable persistence is not shown in `main.mo`).",
+      "description": "Added a backend state migration module (migration.mo) and wired migration into the backend actor.",
+      "reason": "The BuildRequest asks to fix price mapping/regression but does not explicitly request adding a migration module/file; this is an additional implementation detail not specified as a requirement.",
       "evidence": [
         "backend/migration.mo",
         "backend/main.mo"
       ]
     },
     {
-      "id": "REQ-5",
-      "requirement": "Keep all existing user-facing text in English and ensure the global footer content remains unchanged, including \"Mobile: 9973279335\".",
-      "reason": "The provided diff for `frontend/src/App.tsx` is truncated and does not show the footer; the diff summary file claims the footer displays the mobile number, but there is insufficient direct evidence in the shown code that the footer text remains unchanged exactly.",
+      "description": "Added/modified repository documentation/metadata files (frontend-file-summaries.txt, project_state.json).",
+      "reason": "These files are not part of the requested functional changes (price mapping, mutation typing fix, error visibility).",
       "evidence": [
-        "frontend/src/App.tsx",
-        "frontend-file-summaries.txt"
+        "frontend-file-summaries.txt",
+        "project_state.json"
       ]
     }
   ],
-  "hallucinated_features": [
-    {
-      "description": "Admin new-order toast notifications (same-tab and cross-tab via `storage` events) and localStorage cross-tab parsing/error handling.",
-      "reason": "Not requested by any REQ; non-goal includes avoiding new unrelated UI features.",
-      "evidence": [
-        "frontend/src/App.tsx",
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "UTM/app identifier tracking based on `window.location.hostname` stored in state.",
-      "reason": "Not requested; unrelated to deployment/persistence fix.",
-      "evidence": [
-        "frontend/src/App.tsx",
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "Introduction/integration of Sonner toast system and Toaster usage in App.",
-      "reason": "Not requested as part of the deployment fix scope.",
-      "evidence": [
-        "frontend/src/App.tsx",
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "Search UI in ShopView, best-selling sorting based on orders, and additional empty/loading states.",
-      "reason": "Not requested; appears to be new UI functionality.",
-      "evidence": [
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "AdminPanel enhancements including image upload with preview/validation and extensive toast notifications.",
-      "reason": "Not requested; non-goals include not adding unrelated UI features.",
-      "evidence": [
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "Orders feature set: order persistence hook, OrdersPanel grouping by customer, clear history with confirmation, order types.",
-      "reason": "Not requested by any REQ; adds new functionality beyond deployment fix.",
-      "evidence": [
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "Global styling/theme changes (Tailwind OKLCH palette, custom fonts, shadows, animations).",
-      "reason": "Not requested; unrelated UI/theming changes.",
-      "evidence": [
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "Document title update to \"RAJESH KURKURE GARHWA\".",
-      "reason": "Not requested; modifies user-facing text/branding beyond scope.",
-      "evidence": [
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "New instructional component HowToAddProducts for admin-only area.",
-      "reason": "Not requested; adds new UI component.",
-      "evidence": [
-        "frontend-file-summaries.txt"
-      ]
-    }
-  ],
-  "confidence": 0.74,
+  "confidence": 0.63,
   "changed_files": [
     "backend/main.mo",
     "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
+    "frontend/src/components/AdminPanel.tsx",
+    "frontend/src/hooks/useProducts.ts",
+    "frontend/src/lib/productMapping.ts",
+    "frontend/src/lib/utils.ts",
     "project_state.json"
   ]
 }

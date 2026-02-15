@@ -1,40 +1,83 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Frontend build hardening and footer text preservation for successful deployment",
+  "title": "Fix product saving regression and rupee/paise price formatting",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Resolve any frontend-side build/deploy blockers and ensure the frontend compiles cleanly in the pipeline.",
+      "summary": "Correct price mapping so backend uses integer paise while UI displays/edits rupees with 2 decimals, ensuring saved prices reload consistently.",
       "acceptanceCriteria": [
-        "`dfx build` (or the platform build step) completes without errors for both backend and frontend.",
-        "Deployment completes successfully (no build-time or deploy-time errors)."
+        "When an admin adds a product with price \"12.50\", the product list in AdminPanel and ShopView displays \"₹12.50\" after the mutation completes.",
+        "After a full page refresh, the product still displays \"₹12.50\" (no change to \"₹1250\" or similar).",
+        "When editing an existing product, the edit dialog pre-fills the rupee price value (2 decimals) that matches what is displayed in the list.",
+        "Backend continues storing price as an integer amount (paise/cents), not a float."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/lib/productMapping.ts",
           "operation": "modify",
-          "description": "Harden runtime-only references (e.g., window usage in rendered markup) so the app can compile in strict build/pipeline environments while keeping existing UI behavior. Ensure any changes do not alter user-facing text."
+          "description": "Fix backend/UI product conversions: map backend Product.pricePaise (bigint) to UI rupees string with exactly 2 decimals; map UI rupees string to bigint paise with safe rounding/normalization so a saved product reloads with the same displayed price."
         },
         {
-          "path": "frontend/public/assets/generated/rajesh-kurkure-garhwa-logo-from-upload.dim_256x256.png",
-          "operation": "create",
-          "description": "Add the referenced header logo asset at this exact path so the production build can reliably include it (source: existing workspace asset `generated/rajesh-kurkure-garhwa-logo-from-upload.dim_256x256.png`)."
+          "path": "frontend/src/hooks/useProducts.ts",
+          "operation": "modify",
+          "description": "Ensure product fetch/mutations consistently use the corrected mapping helpers so values displayed in AdminPanel and ShopView reflect rupees (2 decimals) while calls into the backend actor use paise bigints."
+        },
+        {
+          "path": "frontend/src/components/AdminPanel.tsx",
+          "operation": "modify",
+          "description": "Align AdminPanel add/edit price handling with the rupees (2 decimals) UI model (e.g., prefill edit dialog from mapped product price, and normalize any user-entered price to 2 decimals for display consistency after save). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ShopView.tsx",
+          "operation": "modify",
+          "description": "Confirm ShopView displays the mapped UI rupee price (2 decimals) consistently after refetch and refresh (no direct paise display). Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-5",
-      "summary": "Preserve all existing English user-facing text and keep the global footer content unchanged, including the exact mobile number string.",
+      "id": "REQ-2",
+      "summary": "Fix update-product conversion typing by preventing passing an object with id into uiToBackendProductData, and make add/update/delete mutations call the backend actor with correct argument types.",
       "acceptanceCriteria": [
-        "The footer still displays \"Mobile: 9973279335\" exactly.",
-        "No user-facing text is changed to a non-English language as part of the fix."
+        "TypeScript build succeeds with no type errors related to product mapping/conversion.",
+        "Updating a product name and/or price in the AdminPanel succeeds and persists after refresh.",
+        "Deleting a product in the AdminPanel succeeds and the product is removed after refresh."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/hooks/useProducts.ts",
           "operation": "modify",
-          "description": "Verify and preserve the footer content and text exactly as-is (including \"Mobile: 9973279335\"). If refactoring for build safety, ensure all user-facing strings remain English and unchanged."
+          "description": "Refactor update mutation to pass Omit<Product,'id'> into uiToBackendProductData (exclude id before conversion), and ensure add/update/delete always convert id to bigint and pass correctly typed arguments to the backend actor."
+        },
+        {
+          "path": "frontend/src/lib/productMapping.ts",
+          "operation": "modify",
+          "description": "Tighten types and naming in uiToBackendProductData to clearly return backend-ready fields (name, pricePaise bigint, image nullable) and prevent accidental misuse with objects that include id."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Surface underlying errors for failed product add/update/delete operations in both toast messages and console logs for easier diagnosis.",
+      "acceptanceCriteria": [
+        "If add/update/delete fails, the toast includes a short error reason when available (fallback to a generic English message if not).",
+        "The console log includes the caught error object for add/update/delete failures."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/AdminPanel.tsx",
+          "operation": "modify",
+          "description": "Improve catch blocks for add/update/delete to log the full caught error object to the console and show a toast that includes a short extracted error message when available (otherwise keep the existing generic English fallback). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useProducts.ts",
+          "operation": "modify",
+          "description": "Ensure mutations propagate meaningful Error messages upward (e.g., preserve actor call failures) so AdminPanel can display the underlying reason in toasts, while still invalidating products queries on success."
+        },
+        {
+          "path": "frontend/src/lib/utils.ts",
+          "operation": "modify",
+          "description": "Add a small shared helper to extract a user-safe message from unknown caught errors (e.g., Error.message / string / fallback) for reuse by product operations; keep all user-facing text in English."
         }
       ]
     }

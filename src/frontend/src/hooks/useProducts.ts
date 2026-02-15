@@ -34,13 +34,17 @@ export function useProducts() {
       const backendData = uiToBackendProductData(product);
       const createdProduct = await actor.addProduct(
         backendData.name,
-        backendData.price,
+        backendData.pricePaise,
         backendData.image
       );
       return backendToUIProduct(createdProduct);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
+    },
+    onError: (error) => {
+      console.error('Add product mutation error:', error);
+      throw error;
     },
   });
 
@@ -65,7 +69,7 @@ export function useProducts() {
       const success = await actor.updateProduct(
         BigInt(id),
         backendData.name,
-        backendData.price,
+        backendData.pricePaise,
         backendData.image
       );
 
@@ -74,6 +78,10 @@ export function useProducts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
+    },
+    onError: (error) => {
+      console.error('Update product mutation error:', error);
+      throw error;
     },
   });
 
@@ -87,6 +95,10 @@ export function useProducts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
+    },
+    onError: (error) => {
+      console.error('Delete product mutation error:', error);
+      throw error;
     },
   });
 

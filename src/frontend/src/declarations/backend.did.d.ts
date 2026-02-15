@@ -13,8 +13,8 @@ import type { Principal } from '@icp-sdk/core/principal';
 export interface Product {
   'id' : bigint,
   'name' : string,
+  'pricePaise' : bigint,
   'image' : [] | [string],
-  'price' : bigint,
 }
 export interface _SERVICE {
   'addProduct' : ActorMethod<[string, bigint, [] | [string]], Product>,

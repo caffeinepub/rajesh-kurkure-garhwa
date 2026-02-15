@@ -1,103 +1,72 @@
 {
   "kind": "build_request",
-  "title": "Fix deployment failure by correcting Motoko backend persistence and migration wiring",
-  "priority": "high",
+  "title": "Fix product saving and price formatting regression",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Investigate and fix the root cause of the build/deploy pipeline failure so the project compiles and deploys successfully.",
+      "text": "Fix the product price mapping so that prices are stored in the backend as integer paise (cents) but displayed and edited in the UI as rupees with 2 decimal places, ensuring a product saved from AdminPanel shows the same price when reloaded.",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-5"
         ],
         "quotes": [
-          "Fix it"
+          "Now also it is not working"
         ]
       },
       "acceptanceCriteria": [
-        "`dfx build` (or the platform build step) completes without errors for both backend and frontend.",
-        "Deployment completes successfully (no build-time or deploy-time errors)."
+        "When an admin adds a product with price \"12.50\", the product list in AdminPanel and ShopView displays \"₹12.50\" after the mutation completes.",
+        "After a full page refresh, the product still displays \"₹12.50\" (no change to \"₹1250\" or similar).",
+        "When editing an existing product, the edit dialog pre-fills the rupee price value (2 decimals) that matches what is displayed in the list.",
+        "Backend continues storing price as an integer amount (paise/cents), not a float."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Make `backend/main.mo` compile reliably on the Internet Computer toolchain by replacing the current `mo:core/Map` usage and any non-compiling Map operations with a supported, correct data structure and APIs (while preserving the existing product CRUD interface semantics).",
-      "target": "backend",
+      "text": "Fix the frontend update-product data conversion to avoid passing an object that includes an `id` field into `uiToBackendProductData` (which expects `Omit<Product, 'id'>`), and ensure add/update/delete product mutations reliably call the backend with correctly typed arguments.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-5"
         ],
         "quotes": [
-          "Fix it"
+          "Now also it is not working"
         ]
       },
       "acceptanceCriteria": [
-        "Motoko backend compiles without errors.",
-        "`addProduct`, `getProductById`, `getAllProducts`, `updateProduct`, and `deleteProduct` behave correctly (create/read/list/update/delete)."
+        "TypeScript build succeeds with no type errors related to product mapping/conversion.",
+        "Updating a product name and/or price in the AdminPanel succeeds and persists after refresh.",
+        "Deleting a product in the AdminPanel succeeds and the product is removed after refresh."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Implement stable, upgrade-safe persistence for products and `nextId` in the single Motoko actor so product data is retained across canister upgrades/redeploys.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Fix it"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After adding products, upgrading/redeploying the canister does not erase product data.",
-        "`nextId` continues incrementing after upgrade (no ID reuse)."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Ensure the backend upgrade/migration setup is consistent with the project’s migration policy (conditional) by providing/repairing `backend/migration.mo` (and any required wiring) so state initialization/upgrade does not break deployment.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Fix it"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The project contains a valid `backend/migration.mo` that matches the backend’s stable state needs.",
-        "Upgrades do not trap due to missing/incorrect migration logic."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Keep all existing user-facing text in English and ensure the existing global footer content remains unchanged, including the text \"Mobile: 9973279335\".",
+      "text": "Improve error visibility for failed product save/update/delete operations by surfacing the underlying error message (when available) in the UI toast and console, so failures are diagnosable without guessing.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-5"
         ],
         "quotes": [
-          "Fix it"
+          "Now also it is not working"
         ]
       },
       "acceptanceCriteria": [
-        "The footer still displays \"Mobile: 9973279335\" exactly.",
-        "No user-facing text is changed to a non-English language as part of the fix."
+        "If add/update/delete fails, the toast includes a short error reason when available (fallback to a generic English message if not).",
+        "The console log includes the caught error object for add/update/delete failures."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in `backend/main.mo` (no multi-canister/backend services).",
-    "Only generate/update `backend/migration.mo` when needed for state upgrade safety (migration policy: conditional).",
-    "Do not edit files under `frontend/src/components/ui` or other frontend immutable paths listed in SYSTEM_CONTEXT."
+    "Keep all existing user-facing text in English.",
+    "Do not modify the existing global footer content in frontend/src/App.tsx, including the text \"Mobile: 9973279335\".",
+    "Do not edit any files under frontend/src/components/ui or any other frontend immutable paths listed in SYSTEM_CONTEXT."
   ],
   "nonGoals": [
-    "Adding new product fields or changing the product CRUD API shape beyond what is required to fix compilation/persistence/deployment.",
-    "Adding third-party services, external databases, or non-Internet-Identity authentication.",
-    "Implementing real-time features (WebSockets/push notifications) or new unrelated UI features."
+    "Implementing a new authentication system or changing login behavior.",
+    "Adding new product fields beyond name, price, and optional image.",
+    "Introducing external databases or third-party services."
   ],
   "imageRequirements": {
     "required": [],

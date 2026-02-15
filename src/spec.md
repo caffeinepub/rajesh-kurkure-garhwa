@@ -1,13 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the current build/deploy failure by making the Motoko backend compile reliably, preserving product CRUD behavior, and ensuring upgrade-safe persistence/migration wiring.
+**Goal:** Fix the regression in product save/update/delete so product prices are consistently stored as integer paise in the backend while being displayed/edited as rupees with 2 decimal places in the UI, and make failures easier to diagnose.
 
 **Planned changes:**
-- Identify and resolve the root cause(s) of the build/deploy pipeline failure so `dfx build` and deployment complete without errors.
-- Replace the current `mo:core/Map` usage in `backend/main.mo` with a supported data structure/APIs that compile on the Internet Computer toolchain while preserving existing product CRUD semantics.
-- Add stable, upgrade-safe persistence for products and `nextId` within the single Motoko actor so data survives canister upgrades/redeploys.
-- Provide or repair `backend/migration.mo` (and required wiring) to match the project’s conditional migration policy and prevent upgrade traps.
-- Ensure all existing user-facing text remains in English and the global footer content remains unchanged, including the exact text: `Mobile: 9973279335`.
+- Correct product price mapping/conversion so UI uses rupees (2 decimals) while backend storage remains integer paise, ensuring prices remain consistent after save and reload.
+- Fix frontend update-product conversion so `uiToBackendProductData` is called with correctly typed data (excluding `id`), and ensure add/update/delete mutations send valid backend arguments.
+- Improve error visibility for failed add/update/delete operations by showing an underlying error reason in the toast when available and logging the caught error object to the console.
 
-**User-visible outcome:** The app builds and deploys successfully; product create/read/list/update/delete continues to work as before, and existing products/IDs remain intact across canister upgrades, with the footer text unchanged.
+**User-visible outcome:** Admins can add, edit, and delete products reliably; prices entered as rupees (e.g., ₹12.50) remain the same immediately after saving and after refresh, and any failed operation shows a clearer error message.

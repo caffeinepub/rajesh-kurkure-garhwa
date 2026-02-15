@@ -2,10 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-investigate-and-fix-the-root-cause-of-the-build-deploy-pipeline-failure-so-the-project-compiles-and-deploys-successfully",
-      "featureTitle": "Investigate and fix the root cause of the build/deploy pipeline failure so the project compiles and deploys successfully.",
+      "featureId": "feature-fix-the-product-price-mapping-so-that-prices-are-stored-in-the-backend-as-integer-paise-cents-but-displayed-and-edited-in-the-ui-as-rupees-with-2-decimal-places-ensuring-a-product-saved-from-adminpanel-shows-the-same-price-when-reloaded",
+      "featureTitle": "Fix the product price mapping so that prices are stored in the backend as integer paise (cents) but displayed and edited in the UI as rupees with 2 decimal places, ensuring a product saved from AdminPanel shows the same price when reloaded.",
       "files": [
-        "frontend/src/App.tsx"
+        "frontend/src/components/AdminPanel.tsx",
+        "frontend/src/hooks/useProducts.ts",
+        "frontend/src/lib/productMapping.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -20,10 +22,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-keep-all-existing-user-facing-text-in-english-and-ensure-the-existing-global-footer-content-remains-unchanged-including-the-text-mobile-9973279335",
-      "featureTitle": "Keep all existing user-facing text in English and ensure the existing global footer content remains unchanged, including the text \"Mobile: 9973279335\".",
+      "featureId": "feature-fix-the-frontend-update-product-data-conversion-to-avoid-passing-an-object-that-includes-an-id-field-into-uitobackendproductdata-which-expects-omit-product-id-and-ensure-add-update-delete-product-mutations-reliably-call-the-backend-with-correctly-typed-arguments",
+      "featureTitle": "Fix the frontend update-product data conversion to avoid passing an object that includes an `id` field into `uiToBackendProductData` (which expects `Omit<Product, 'id'>`), and ensure add/update/delete product mutations reliably call the backend with correctly typed arguments.",
       "files": [
-        "frontend/src/App.tsx"
+        "frontend/src/hooks/useProducts.ts",
+        "frontend/src/lib/productMapping.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -33,7 +36,27 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-5"
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-improve-error-visibility-for-failed-product-save-update-delete-operations-by-surfacing-the-underlying-error-message-when-available-in-the-ui-toast-and-console-so-failures-are-diagnosable-without-guessing",
+      "featureTitle": "Improve error visibility for failed product save/update/delete operations by surfacing the underlying error message (when available) in the UI toast and console, so failures are diagnosable without guessing.",
+      "files": [
+        "frontend/src/components/AdminPanel.tsx",
+        "frontend/src/hooks/useProducts.ts",
+        "frontend/src/lib/utils.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
       ],
       "confidence": "high"
     }

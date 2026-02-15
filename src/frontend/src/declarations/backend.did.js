@@ -11,8 +11,8 @@ import { IDL } from '@icp-sdk/core/candid';
 export const Product = IDL.Record({
   'id' : IDL.Nat,
   'name' : IDL.Text,
+  'pricePaise' : IDL.Nat,
   'image' : IDL.Opt(IDL.Text),
-  'price' : IDL.Nat,
 });
 
 export const idlService = IDL.Service({
@@ -37,8 +37,8 @@ export const idlFactory = ({ IDL }) => {
   const Product = IDL.Record({
     'id' : IDL.Nat,
     'name' : IDL.Text,
+    'pricePaise' : IDL.Nat,
     'image' : IDL.Opt(IDL.Text),
-    'price' : IDL.Nat,
   });
   
   return IDL.Service({

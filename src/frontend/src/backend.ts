@@ -92,15 +92,15 @@ export class ExternalBlob {
 export interface Product {
     id: bigint;
     name: string;
+    pricePaise: bigint;
     image?: string;
-    price: bigint;
 }
 export interface backendInterface {
-    addProduct(name: string, price: bigint, image: string | null): Promise<Product>;
+    addProduct(name: string, pricePaise: bigint, image: string | null): Promise<Product>;
     deleteProduct(id: bigint): Promise<boolean>;
     getAllProducts(): Promise<Array<Product>>;
     getProductById(id: bigint): Promise<Product | null>;
-    updateProduct(id: bigint, name: string, price: bigint, image: string | null): Promise<boolean>;
+    updateProduct(id: bigint, name: string, pricePaise: bigint, image: string | null): Promise<boolean>;
 }
 import type { Product as _Product } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -188,19 +188,19 @@ function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Ar
 function from_candid_record_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     id: bigint;
     name: string;
+    pricePaise: bigint;
     image: [] | [string];
-    price: bigint;
 }): {
     id: bigint;
     name: string;
+    pricePaise: bigint;
     image?: string;
-    price: bigint;
 } {
     return {
         id: value.id,
         name: value.name,
-        image: record_opt_to_undefined(from_candid_opt_n4(_uploadFile, _downloadFile, value.image)),
-        price: value.price
+        pricePaise: value.pricePaise,
+        image: record_opt_to_undefined(from_candid_opt_n4(_uploadFile, _downloadFile, value.image))
     };
 }
 function from_candid_vec_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Product>): Array<Product> {

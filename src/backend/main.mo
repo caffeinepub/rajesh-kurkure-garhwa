@@ -9,18 +9,18 @@ actor {
   type Product = {
     id : Nat;
     name : Text;
-    price : Nat;
+    pricePaise : Nat;
     image : ?Text;
   };
 
   var nextId = 0;
   var productMap = Map.empty<Nat, Product>();
 
-  public shared ({ caller }) func addProduct(name : Text, price : Nat, image : ?Text) : async Product {
+  public shared ({ caller }) func addProduct(name : Text, pricePaise : Nat, image : ?Text) : async Product {
     let product : Product = {
       id = nextId;
       name;
-      price;
+      pricePaise;
       image;
     };
     productMap.add(nextId, product);
@@ -36,14 +36,14 @@ actor {
     productMap.values().toArray();
   };
 
-  public shared ({ caller }) func updateProduct(id : Nat, name : Text, price : Nat, image : ?Text) : async Bool {
+  public shared ({ caller }) func updateProduct(id : Nat, name : Text, pricePaise : Nat, image : ?Text) : async Bool {
     switch (productMap.get(id)) {
       case (null) { false };
       case (?_) {
         let updatedProduct : Product = {
           id;
           name;
-          price;
+          pricePaise;
           image;
         };
         productMap.add(id, updatedProduct);

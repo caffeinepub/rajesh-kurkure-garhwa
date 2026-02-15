@@ -2,13 +2,13 @@ import type { Product as BackendProduct } from '../backend';
 import type { Product as UIProduct } from '../types/product';
 
 /**
- * Convert backend Product (bigint id/price) to UI Product (string id/price)
+ * Convert backend Product (bigint id/pricePaise) to UI Product (string id/price in rupees)
  */
 export function backendToUIProduct(backendProduct: BackendProduct): UIProduct {
   return {
     id: backendProduct.id.toString(),
     name: backendProduct.name,
-    price: backendProduct.price.toString(),
+    price: formatPriceFromPaise(backendProduct.pricePaise),
     image: backendProduct.image || undefined,
   };
 }
@@ -18,24 +18,24 @@ export function backendToUIProduct(backendProduct: BackendProduct): UIProduct {
  */
 export function uiToBackendProductData(uiProduct: Omit<UIProduct, 'id'>): {
   name: string;
-  price: bigint;
+  pricePaise: bigint;
   image: string | null;
 } {
-  // Parse price safely
+  // Parse price safely and convert rupees to paise
   const priceNum = parseFloat(uiProduct.price);
-  const priceBigInt = isNaN(priceNum) ? 0n : BigInt(Math.floor(priceNum * 100)); // Store as paise (cents)
+  const pricePaise = isNaN(priceNum) ? 0n : BigInt(Math.round(priceNum * 100));
 
   return {
     name: uiProduct.name,
-    price: priceBigInt,
+    pricePaise,
     image: uiProduct.image || null,
   };
 }
 
 /**
- * Parse bigint price to display string (convert from paise to rupees)
+ * Format bigint paise to display string (convert from paise to rupees with 2 decimals)
  */
-export function formatPrice(priceBigInt: bigint): string {
-  const priceNum = Number(priceBigInt) / 100;
+export function formatPriceFromPaise(pricePaise: bigint): string {
+  const priceNum = Number(pricePaise) / 100;
   return priceNum.toFixed(2);
 }

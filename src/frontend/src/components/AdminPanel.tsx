@@ -4,12 +4,13 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/alert-dialog';
 import { Plus, Pencil, Trash2, Upload, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Product } from '../types/product';
 import HowToAddProducts from './HowToAddProducts';
+import { getErrorMessage } from '../lib/utils';
 
 interface AdminPanelProps {
   products: Product[];
@@ -91,8 +92,9 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
 
     setIsSubmitting(true);
     try {
-      // Add product (async)
-      await onAddProduct({ name: name.trim(), price: price.trim(), image });
+      // Normalize price to 2 decimals
+      const normalizedPrice = priceNum.toFixed(2);
+      await onAddProduct({ name: name.trim(), price: normalizedPrice, image });
       toast.success('Product added successfully!');
       setName('');
       setPrice('');
@@ -100,7 +102,8 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
       setImagePreview(undefined);
     } catch (error) {
       console.error('Failed to add product:', error);
-      toast.error('Failed to add product. Please try again.');
+      const errorMessage = getErrorMessage(error);
+      toast.error(`Failed to add product: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -132,10 +135,11 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
 
     setIsUpdating(true);
     try {
-      // Update product (async)
+      // Normalize price to 2 decimals
+      const normalizedPrice = priceNum.toFixed(2);
       await onUpdateProduct(editingProduct.id, {
         name: editName.trim(),
-        price: editPrice.trim(),
+        price: normalizedPrice,
         image: editImage,
       });
       toast.success('Product updated successfully!');
@@ -143,7 +147,8 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
       setEditingProduct(null);
     } catch (error) {
       console.error('Failed to update product:', error);
-      toast.error('Failed to update product. Please try again.');
+      const errorMessage = getErrorMessage(error);
+      toast.error(`Failed to update product: ${errorMessage}`);
     } finally {
       setIsUpdating(false);
     }
@@ -155,7 +160,8 @@ export default function AdminPanel({ products, onAddProduct, onUpdateProduct, on
       toast.success(`${product.name} deleted successfully!`);
     } catch (error) {
       console.error('Failed to delete product:', error);
-      toast.error('Failed to delete product. Please try again.');
+      const errorMessage = getErrorMessage(error);
+      toast.error(`Failed to delete product: ${errorMessage}`);
     }
   };
 
