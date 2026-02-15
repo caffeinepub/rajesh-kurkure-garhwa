@@ -22,6 +22,15 @@ function App() {
   const prevOrderCountRef = useRef<number>(0);
   const isInitialLoadRef = useRef<boolean>(true);
 
+  // Get app identifier for UTM tracking (safe for SSR/build)
+  const [appIdentifier, setAppIdentifier] = useState<string>('unknown-app');
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setAppIdentifier(window.location.hostname || 'unknown-app');
+    }
+  }, []);
+
   const handleLogin = (role: UserRole, loginUsername: string) => {
     setUserRole(role);
     setUsername(loginUsername);
@@ -175,7 +184,7 @@ function App() {
               <p className="flex items-center gap-1">
                 Built with <span className="text-destructive">♥</span> using{' '}
                 <a
-                  href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
+                  href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(appIdentifier)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium hover:text-foreground transition-colors underline"

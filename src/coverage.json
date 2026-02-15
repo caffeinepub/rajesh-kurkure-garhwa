@@ -1,58 +1,51 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-14T09:14:07.021Z",
+  "generatedAt": "2026-02-15T03:53:19.999Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 5,
-    "implemented": 3,
+    "implemented": 2,
     "items": [
       {
+        "id": "REQ-1",
+        "summary": "Investigate and fix the root cause of the build/deploy pipeline failure so the project compiles and deploys successfully.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/public/assets/generated/rajesh-kurkure-garhwa-logo-from-upload.dim_256x256.png"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Make `backend/main.mo` compile reliably on the Internet Computer toolchain by replacing the current `mo:core/Map` usage and any non-compiling Map operations with a supported, correct data structure and APIs (while preserving the existing product CRUD interface semantics).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
         "id": "REQ-3",
-        "summary": "Implement persistent product storage in `backend/main.mo` using stable state so products are saved permanently across canister upgrades (the current actor is empty). Add a Product data model compatible with the frontend (`id`, `name`, `price`, optional `image` as text) and store the full product list in stable storage.",
+        "summary": "Implement stable, upgrade-safe persistence for products and `nextId` in the single Motoko actor so product data is retained across canister upgrades/redeploys.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
         "id": "REQ-4",
-        "summary": "Expose backend CRUD + read APIs for products from `backend/main.mo`: list/get all products (query), create product (update), update product by id (update), delete product by id (update). Ensure IDs are unique and stable for each created product.",
+        "summary": "Ensure the backend upgrade/migration setup is consistent with the project’s migration policy (conditional) by providing/repairing `backend/migration.mo` (and any required wiring) so state initialization/upgrade does not break deployment.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
         "id": "REQ-5",
-        "summary": "Update the frontend product data flow to use the backend product APIs instead of `localStorage`. Replace the current `useProducts` hook behavior (which reads/writes `localStorage`) with backend-backed fetching and mutations (using React Query) so product changes are shared across devices/browsers and persist permanently.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useProducts.ts",
-          "frontend/src/lib/productMapping.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useProducts.ts",
-          "frontend/src/lib/productMapping.ts"
-        ]
-      },
-      {
-        "id": "REQ-6",
-        "summary": "Wire the existing UI components to the backend-backed products hook so existing admin/shop behaviors remain the same: `App.tsx` continues to pass `products`, `addProduct`, `updateProduct`, `deleteProduct` to `ShopView` and `AdminPanel`, but these operations now call the backend and keep UI state in sync (including loading/error handling with user-friendly English messages).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/AdminPanel.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/AdminPanel.tsx"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "Verify build/deploy succeeds after these changes and the app retains the existing global footer content, including the English text \"Mobile: 9973279335\" in the footer.",
+        "summary": "Keep all existing user-facing text in English and ensure the existing global footer content remains unchanged, including the text \"Mobile: 9973279335\".",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/App.tsx"
@@ -71,14 +64,6 @@
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/AdminPanel.tsx",
-    "frontend/src/components/ShopView.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useProducts.ts",
-    "frontend/src/lib/productMapping.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

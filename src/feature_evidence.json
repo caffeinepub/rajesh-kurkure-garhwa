@@ -2,46 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-frontend-product-data-flow-to-use-the-backend-product-apis-instead-of-localstorage-replace-the-current-useproducts-hook-behavior-which-reads-writes-localstorage-with-backend-backed-fetching-and-mutations-using-react-query-so-product-changes-are-shared-across-devices-browsers-and-persist-permanently",
-      "featureTitle": "Update the frontend product data flow to use the backend product APIs instead of `localStorage`. Replace the current `useProducts` hook behavior (which reads/writes `localStorage`) with backend-backed fetching and mutations (using React Query) so product changes are shared across devices/browsers and persist permanently.",
-      "files": [
-        "frontend/src/hooks/useProducts.ts",
-        "frontend/src/lib/productMapping.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-wire-the-existing-ui-components-to-the-backend-backed-products-hook-so-existing-admin-shop-behaviors-remain-the-same-app-tsx-continues-to-pass-products-addproduct-updateproduct-deleteproduct-to-shopview-and-adminpanel-but-these-operations-now-call-the-backend-and-keep-ui-state-in-sync-including-loading-error-handling-with-user-friendly-english-messages",
-      "featureTitle": "Wire the existing UI components to the backend-backed products hook so existing admin/shop behaviors remain the same: `App.tsx` continues to pass `products`, `addProduct`, `updateProduct`, `deleteProduct` to `ShopView` and `AdminPanel`, but these operations now call the backend and keep UI state in sync (including loading/error handling with user-friendly English messages).",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/AdminPanel.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-verify-build-deploy-succeeds-after-these-changes-and-the-app-retains-the-existing-global-footer-content-including-the-english-text-mobile-9973279335-in-the-footer",
-      "featureTitle": "Verify build/deploy succeeds after these changes and the app retains the existing global footer content, including the English text \"Mobile: 9973279335\" in the footer.",
+      "featureId": "feature-investigate-and-fix-the-root-cause-of-the-build-deploy-pipeline-failure-so-the-project-compiles-and-deploys-successfully",
+      "featureTitle": "Investigate and fix the root cause of the build/deploy pipeline failure so the project compiles and deploys successfully.",
       "files": [
         "frontend/src/App.tsx"
       ],
@@ -53,7 +15,25 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-7"
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-keep-all-existing-user-facing-text-in-english-and-ensure-the-existing-global-footer-content-remains-unchanged-including-the-text-mobile-9973279335",
+      "featureTitle": "Keep all existing user-facing text in English and ensure the existing global footer content remains unchanged, including the text \"Mobile: 9973279335\".",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
       ],
       "confidence": "high"
     }

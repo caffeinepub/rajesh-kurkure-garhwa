@@ -1,63 +1,40 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Frontend: Replace localStorage products with backend-backed React Query flow",
+  "title": "Frontend build hardening and footer text preservation for successful deployment",
   "requirements": [
     {
-      "id": "REQ-5",
-      "summary": "Replace localStorage-based product persistence with backend-backed React Query fetching and mutations in useProducts.",
+      "id": "REQ-1",
+      "summary": "Resolve any frontend-side build/deploy blockers and ensure the frontend compiles cleanly in the pipeline.",
       "acceptanceCriteria": [
-        "Refreshing the page does not lose products (products reload from the backend).",
-        "Adding/editing/deleting a product in the Admin panel persists after a full page reload and on a different browser session.",
-        "`frontend/src/hooks/useProducts.ts` no longer depends on `localStorage` for persistence.",
-        "Product image upload (data URL string) continues to work end-to-end (saved and returned by backend)."
+        "`dfx build` (or the platform build step) completes without errors for both backend and frontend.",
+        "Deployment completes successfully (no build-time or deploy-time errors)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useProducts.ts",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Rewrite the hook to use React Query + the existing backend actor (via useActor) to load products from the backend and perform add/update/delete mutations; remove all localStorage reads/writes and local ID generation, and ensure image values are passed through as data URL strings (string|null) and returned to the UI."
+          "description": "Harden runtime-only references (e.g., window usage in rendered markup) so the app can compile in strict build/pipeline environments while keeping existing UI behavior. Ensure any changes do not alter user-facing text."
         },
         {
-          "path": "frontend/src/lib/productMapping.ts",
+          "path": "frontend/public/assets/generated/rajesh-kurkure-garhwa-logo-from-upload.dim_256x256.png",
           "operation": "create",
-          "description": "Add small mapping helpers to convert between backend Product types (e.g., bigint id/price and optional image) and the UI Product type (string id/price and optional image), including safe parsing/formatting and null/undefined handling."
+          "description": "Add the referenced header logo asset at this exact path so the production build can reliably include it (source: existing workspace asset `generated/rajesh-kurkure-garhwa-logo-from-upload.dim_256x256.png`)."
         }
       ]
     },
     {
-      "id": "REQ-6",
-      "summary": "Keep existing Shop/Admin UI behavior while wiring them to the backend-backed products hook with friendly loading/error handling.",
+      "id": "REQ-5",
+      "summary": "Preserve all existing English user-facing text and keep the global footer content unchanged, including the exact mobile number string.",
       "acceptanceCriteria": [
-        "ShopView displays the backend product list correctly.",
-        "AdminPanel add/edit/delete operations update the UI list and remain consistent after reload.",
-        "If a backend call fails, the UI shows an English error message (e.g., toast) and does not corrupt the local UI state."
+        "The footer still displays \"Mobile: 9973279335\" exactly.",
+        "No user-facing text is changed to a non-English language as part of the fix."
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Update App to consume the new useProducts return shape (backend-backed), continue passing `products`, `addProduct`, `updateProduct`, `deleteProduct` into ShopView/AdminPanel, and surface user-friendly English error handling (e.g., toast) for product load/mutation failures while keeping UI state consistent."
-        },
-        {
-          "path": "frontend/src/components/AdminPanel.tsx",
-          "operation": "modify",
-          "description": "Adjust AdminPanel to support async add/edit/delete handlers (await results before showing success toasts), and show clear English error toasts when an operation fails; ensure image upload continues to pass a data URL string into the add/update calls."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Ensure the frontend still builds and retains the existing footer content including the mobile number text.",
-      "acceptanceCriteria": [
-        "Project compiles and deploys successfully.",
-        "The footer still shows \"Mobile: 9973279335\" at the bottom of the app."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Verify the existing footer markup and the exact English text \"Mobile: 9973279335\" remains unchanged while integrating the updated products data flow."
+          "description": "Verify and preserve the footer content and text exactly as-is (including \"Mobile: 9973279335\"). If refactoring for build safety, ensure all user-facing strings remain English and unchanged."
         }
       ]
     }

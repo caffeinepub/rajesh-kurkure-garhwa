@@ -1,7 +1,7 @@
-import Map "mo:core/Map";
-import Nat "mo:core/Nat";
-import Text "mo:core/Text";
 import Iter "mo:core/Iter";
+import Text "mo:core/Text";
+import Nat "mo:core/Nat";
+import Map "mo:core/Map";
 import Migration "migration";
 
 (with migration = Migration.run)
@@ -14,8 +14,7 @@ actor {
   };
 
   var nextId = 0;
-
-  let productMap = Map.empty<Nat, Product>();
+  var productMap = Map.empty<Nat, Product>();
 
   public shared ({ caller }) func addProduct(name : Text, price : Nat, image : ?Text) : async Product {
     let product : Product = {
