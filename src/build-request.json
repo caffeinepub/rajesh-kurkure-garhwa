@@ -1,72 +1,54 @@
 {
   "kind": "build_request",
-  "title": "Fix product saving and price formatting regression",
+  "title": "Fix product load failure after adding products (ID type mismatch)",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix the product price mapping so that prices are stored in the backend as integer paise (cents) but displayed and edited in the UI as rupees with 2 decimal places, ensuring a product saved from AdminPanel shows the same price when reloaded.",
-      "target": "both",
+      "text": "Fix the product ID type mismatch that causes the UI to show an error (e.g., \"unable to load the product\") after adding any product by normalizing backend product IDs and pricePaise values to the UI’s expected types (UI Product.id must always be a string), even when the agent/runtime provides Nat values as JavaScript numbers instead of bigint.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-1"
         ],
         "quotes": [
-          "Now also it is not working"
+          "After adding any products"
         ]
       },
       "acceptanceCriteria": [
-        "When an admin adds a product with price \"12.50\", the product list in AdminPanel and ShopView displays \"₹12.50\" after the mutation completes.",
-        "After a full page refresh, the product still displays \"₹12.50\" (no change to \"₹1250\" or similar).",
-        "When editing an existing product, the edit dialog pre-fills the rupee price value (2 decimals) that matches what is displayed in the list.",
-        "Backend continues storing price as an integer amount (paise/cents), not a float."
+        "After adding a product in AdminPanel, the product list refreshes and displays the newly added product without any \"unable to load the product\" (or equivalent) error state.",
+        "All products returned from the backend (including newly added ones) render with stable React keys and can be edited/deleted successfully.",
+        "Product mapping handles backend numeric-like values robustly (e.g., id/pricePaise received as number or bigint), and always produces UI Product objects with id as string and price formatted with 2 decimals."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Fix the frontend update-product data conversion to avoid passing an object that includes an `id` field into `uiToBackendProductData` (which expects `Omit<Product, 'id'>`), and ensure add/update/delete product mutations reliably call the backend with correctly typed arguments.",
+      "text": "Update the products CRUD hook to ensure all backend calls receive correctly typed arguments derived from UI state: convert UI string IDs to Nat/bigint safely for update/delete operations, and ensure update-product data conversion does not pass an object containing an id field into the UI→backend mapping helper.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-1"
         ],
         "quotes": [
-          "Now also it is not working"
+          "After adding any products"
         ]
       },
       "acceptanceCriteria": [
-        "TypeScript build succeeds with no type errors related to product mapping/conversion.",
-        "Updating a product name and/or price in the AdminPanel succeeds and persists after refresh.",
-        "Deleting a product in the AdminPanel succeeds and the product is removed after refresh."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Improve error visibility for failed product save/update/delete operations by surfacing the underlying error message (when available) in the UI toast and console, so failures are diagnosable without guessing.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ],
-        "quotes": [
-          "Now also it is not working"
-        ]
-      },
-      "acceptanceCriteria": [
-        "If add/update/delete fails, the toast includes a short error reason when available (fallback to a generic English message if not).",
-        "The console log includes the caught error object for add/update/delete failures."
+        "Updating a product works after adding it (no \"Product not found\" due to ID conversion issues).",
+        "Deleting a product works after adding it (no errors due to ID conversion issues).",
+        "The update-product path does not pass a value containing an `id` field into the UI→backend conversion helper that expects `Omit<Product, 'id'>`."
       ]
     }
   ],
   "constraints": [
-    "Keep all existing user-facing text in English.",
-    "Do not modify the existing global footer content in frontend/src/App.tsx, including the text \"Mobile: 9973279335\".",
-    "Do not edit any files under frontend/src/components/ui or any other frontend immutable paths listed in SYSTEM_CONTEXT."
+    "Do not modify files under frontend/src/components/ui (read-only UI components).",
+    "Do not edit frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
+    "Backend must remain a single Motoko actor in backend/main.mo; only add a migration in backend/migration.mo if a state schema change is required."
   ],
   "nonGoals": [
-    "Implementing a new authentication system or changing login behavior.",
-    "Adding new product fields beyond name, price, and optional image.",
-    "Introducing external databases or third-party services."
+    "Adding new authentication methods beyond the existing Internet Identity setup.",
+    "Adding external databases or third-party services.",
+    "Redesigning the overall UI/UX beyond what is necessary to resolve the product loading failure."
   ],
   "imageRequirements": {
     "required": [],

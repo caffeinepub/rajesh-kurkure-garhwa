@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import type { Product } from '../types/product';
-import { backendToUIProduct, uiToBackendProductData } from '../lib/productMapping';
+import { backendToUIProduct, uiToBackendProductData, parseProductId } from '../lib/productMapping';
 
 const PRODUCTS_QUERY_KEY = ['products'];
 
@@ -64,10 +64,16 @@ export function useProducts() {
       if (!currentProduct) throw new Error('Product not found');
 
       const updatedProduct = { ...currentProduct, ...updates };
-      const backendData = uiToBackendProductData(updatedProduct);
+      
+      // Extract only the fields needed for backend (without id)
+      const { name, price, image } = updatedProduct;
+      const backendData = uiToBackendProductData({ name, price, image });
+
+      // Parse UI string ID to bigint safely
+      const productId = parseProductId(id);
 
       const success = await actor.updateProduct(
-        BigInt(id),
+        productId,
         backendData.name,
         backendData.pricePaise,
         backendData.image
@@ -89,7 +95,11 @@ export function useProducts() {
   const deleteProductMutation = useMutation({
     mutationFn: async (id: string) => {
       if (!actor) throw new Error('Backend actor not initialized');
-      const success = await actor.deleteProduct(BigInt(id));
+      
+      // Parse UI string ID to bigint safely
+      const productId = parseProductId(id);
+      
+      const success = await actor.deleteProduct(productId);
       if (!success) throw new Error('Product not found');
       return id;
     },

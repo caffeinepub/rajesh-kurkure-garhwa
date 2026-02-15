@@ -2,10 +2,9 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-the-product-price-mapping-so-that-prices-are-stored-in-the-backend-as-integer-paise-cents-but-displayed-and-edited-in-the-ui-as-rupees-with-2-decimal-places-ensuring-a-product-saved-from-adminpanel-shows-the-same-price-when-reloaded",
-      "featureTitle": "Fix the product price mapping so that prices are stored in the backend as integer paise (cents) but displayed and edited in the UI as rupees with 2 decimal places, ensuring a product saved from AdminPanel shows the same price when reloaded.",
+      "featureId": "feature-fix-the-product-id-type-mismatch-that-causes-the-ui-to-show-an-error-e-g-unable-to-load-the-product-after-adding-any-product-by-normalizing-backend-product-ids-and-pricepaise-values-to-the-ui-s-expected-types-ui-product-id-must-always-be-a-string-even-when-the-agent-runtime-provides-nat-values-as-javascript-numbers-instead-of-bigint",
+      "featureTitle": "Fix the product ID type mismatch that causes the UI to show an error (e.g., \"unable to load the product\") after adding any product by normalizing backend product IDs and pricePaise values to the UI’s expected types (UI Product.id must always be a string), even when the agent/runtime provides Nat values as JavaScript numbers instead of bigint.",
       "files": [
-        "frontend/src/components/AdminPanel.tsx",
         "frontend/src/hooks/useProducts.ts",
         "frontend/src/lib/productMapping.ts"
       ],
@@ -22,8 +21,8 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-fix-the-frontend-update-product-data-conversion-to-avoid-passing-an-object-that-includes-an-id-field-into-uitobackendproductdata-which-expects-omit-product-id-and-ensure-add-update-delete-product-mutations-reliably-call-the-backend-with-correctly-typed-arguments",
-      "featureTitle": "Fix the frontend update-product data conversion to avoid passing an object that includes an `id` field into `uiToBackendProductData` (which expects `Omit<Product, 'id'>`), and ensure add/update/delete product mutations reliably call the backend with correctly typed arguments.",
+      "featureId": "feature-update-the-products-crud-hook-to-ensure-all-backend-calls-receive-correctly-typed-arguments-derived-from-ui-state-convert-ui-string-ids-to-nat-bigint-safely-for-update-delete-operations-and-ensure-update-product-data-conversion-does-not-pass-an-object-containing-an-id-field-into-the-ui-backend-mapping-helper",
+      "featureTitle": "Update the products CRUD hook to ensure all backend calls receive correctly typed arguments derived from UI state: convert UI string IDs to Nat/bigint safely for update/delete operations, and ensure update-product data conversion does not pass an object containing an id field into the UI→backend mapping helper.",
       "files": [
         "frontend/src/hooks/useProducts.ts",
         "frontend/src/lib/productMapping.ts"
@@ -37,26 +36,6 @@
       ],
       "testIds": [
         "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-improve-error-visibility-for-failed-product-save-update-delete-operations-by-surfacing-the-underlying-error-message-when-available-in-the-ui-toast-and-console-so-failures-are-diagnosable-without-guessing",
-      "featureTitle": "Improve error visibility for failed product save/update/delete operations by surfacing the underlying error message (when available) in the UI toast and console, so failures are diagnosable without guessing.",
-      "files": [
-        "frontend/src/components/AdminPanel.tsx",
-        "frontend/src/hooks/useProducts.ts",
-        "frontend/src/lib/utils.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
       ],
       "confidence": "high"
     }

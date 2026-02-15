@@ -2,9 +2,9 @@ import Iter "mo:core/Iter";
 import Text "mo:core/Text";
 import Nat "mo:core/Nat";
 import Map "mo:core/Map";
-import Migration "migration";
 
-(with migration = Migration.run)
+
+
 actor {
   type Product = {
     id : Nat;

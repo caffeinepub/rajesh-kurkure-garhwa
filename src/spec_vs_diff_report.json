@@ -1,56 +1,30 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T04:39:40.617Z",
-  "summary": "REQ-1 appears largely implemented via a backend schema change to store prices as integer paise (pricePaise) plus frontend mapping functions that convert paise<->rupees with 2 decimals. However, REQ-2 is not correctly implemented: the update mutation still passes an object that includes `id` into `uiToBackendProductData`, which is typed to accept `Omit<Product,'id'>`. REQ-3 has partial evidence (console logging in hook, new getErrorMessage helper), but the diff is truncated for AdminPanel’s toast handling for all operations, so full UI/console error-surfacing for add/update/delete cannot be confirmed.",
-  "missing_requirements": [
-    {
-      "id": "REQ-2",
-      "requirement": "Fix the frontend update-product data conversion to avoid passing an object that includes an `id` field into `uiToBackendProductData` (expects `Omit<Product, 'id'>`), and ensure add/update/delete product mutations reliably call the backend with correctly typed arguments.",
-      "reason": "The update mutation constructs `updatedProduct` by merging `{ ...currentProduct, ...updates }`, which includes `id`, then passes it directly into `uiToBackendProductData(updatedProduct)`. This contradicts the function signature shown in productMapping.ts and likely preserves the original TypeScript type error mentioned in the requirement.",
-      "evidence": [
-        "frontend/src/hooks/useProducts.ts",
-        "frontend/src/lib/productMapping.ts"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "Improve error visibility for failed product save/update/delete operations by surfacing the underlying error message (when available) in the UI toast and console.",
-      "reason": "Console logging is present in the React Query mutations, and a `getErrorMessage` helper was added, but the AdminPanel implementation that should show the underlying error message in toast for add/update/delete is truncated; the diff summary only clearly shows toast usage for validation and success, and a partial catch block for add. There is not enough complete evidence that update/delete failures surface the underlying message in toasts as required.",
-      "evidence": [
-        "frontend/src/components/AdminPanel.tsx (truncated)",
-        "frontend/src/hooks/useProducts.ts",
-        "frontend/src/lib/utils.ts"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-15T04:56:19.787Z",
+  "summary": "The diff implements robust frontend-side product ID/price normalization and correct ID conversion for update/delete calls via new/updated mapping helpers and changes in the products CRUD hook. It also modifies two meta/documentation/state summary files not requested by the BuildRequest.",
+  "missing_requirements": [],
   "hallucinated_features": [
     {
-      "description": "Added a backend state migration module (migration.mo) and wired migration into the backend actor.",
-      "reason": "The BuildRequest asks to fix price mapping/regression but does not explicitly request adding a migration module/file; this is an additional implementation detail not specified as a requirement.",
+      "description": "Updated/added project metadata tracking of feature requests and status (project_state.json).",
+      "reason": "BuildRequest only asks to fix the frontend product ID mismatch and CRUD typing; it does not request adding/updating project tracking files.",
       "evidence": [
-        "backend/migration.mo",
-        "backend/main.mo"
+        "project_state.json"
       ]
     },
     {
-      "description": "Added/modified repository documentation/metadata files (frontend-file-summaries.txt, project_state.json).",
-      "reason": "These files are not part of the requested functional changes (price mapping, mutation typing fix, error visibility).",
+      "description": "Updated a frontend file summary/documentation artifact (frontend-file-summaries.txt).",
+      "reason": "BuildRequest does not request generating or modifying summary documentation files; only functional code changes were requested.",
       "evidence": [
-        "frontend-file-summaries.txt",
-        "project_state.json"
+        "frontend-file-summaries.txt"
       ]
     }
   ],
-  "confidence": 0.63,
+  "confidence": 0.86,
   "changed_files": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/AdminPanel.tsx",
     "frontend/src/hooks/useProducts.ts",
     "frontend/src/lib/productMapping.ts",
-    "frontend/src/lib/utils.ts",
     "project_state.json"
   ]
 }

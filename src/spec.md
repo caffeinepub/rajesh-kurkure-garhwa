@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the regression in product save/update/delete so product prices are consistently stored as integer paise in the backend while being displayed/edited as rupees with 2 decimal places in the UI, and make failures easier to diagnose.
+**Goal:** Fix product load failures after adding products by normalizing backend-to-UI product data types and ensuring CRUD calls use correctly typed IDs.
 
 **Planned changes:**
-- Correct product price mapping/conversion so UI uses rupees (2 decimals) while backend storage remains integer paise, ensuring prices remain consistent after save and reload.
-- Fix frontend update-product conversion so `uiToBackendProductData` is called with correctly typed data (excluding `id`), and ensure add/update/delete mutations send valid backend arguments.
-- Improve error visibility for failed add/update/delete operations by showing an underlying error reason in the toast when available and logging the caught error object to the console.
+- Normalize product mapping so UI `Product.id` is always a string and backend numeric-like values (e.g., `id`, `pricePaise` as `number` or `bigint`) are handled robustly.
+- Ensure product list rendering uses stable React keys derived from the normalized string IDs and newly added products display correctly after refresh.
+- Update the products CRUD hook to safely convert UI string IDs to backend Nat/`bigint` for update/delete operations.
+- Fix the update-product flow so the UI→backend conversion helper is called with data that does not include an `id` field when it expects `Omit<Product, 'id'>`.
 
-**User-visible outcome:** Admins can add, edit, and delete products reliably; prices entered as rupees (e.g., ₹12.50) remain the same immediately after saving and after refresh, and any failed operation shows a clearer error message.
+**User-visible outcome:** After adding a product, the product list refreshes and shows the new item without “unable to load the product” errors, and products can be edited or deleted reliably (no “Product not found” / ID conversion issues).

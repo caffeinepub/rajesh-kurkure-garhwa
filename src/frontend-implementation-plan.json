@@ -1,83 +1,47 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix product saving regression and rupee/paise price formatting",
+  "title": "Normalize product ID and price types across product CRUD to prevent post-create load failures",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Correct price mapping so backend uses integer paise while UI displays/edits rupees with 2 decimals, ensuring saved prices reload consistently.",
+      "summary": "Harden backend→UI product normalization so UI Product.id is always a string and price always formats to 2 decimals even when backend Nat-like values arrive as number/bigint.",
       "acceptanceCriteria": [
-        "When an admin adds a product with price \"12.50\", the product list in AdminPanel and ShopView displays \"₹12.50\" after the mutation completes.",
-        "After a full page refresh, the product still displays \"₹12.50\" (no change to \"₹1250\" or similar).",
-        "When editing an existing product, the edit dialog pre-fills the rupee price value (2 decimals) that matches what is displayed in the list.",
-        "Backend continues storing price as an integer amount (paise/cents), not a float."
+        "After adding a product in AdminPanel, the product list refreshes and displays the newly added product without any \"unable to load the product\" (or equivalent) error state.",
+        "All products returned from the backend (including newly added ones) render with stable React keys and can be edited/deleted successfully.",
+        "Product mapping handles backend numeric-like values robustly (e.g., id/pricePaise received as number or bigint), and always produces UI Product objects with id as string and price formatted with 2 decimals."
       ],
       "file_operations": [
         {
           "path": "frontend/src/lib/productMapping.ts",
           "operation": "modify",
-          "description": "Fix backend/UI product conversions: map backend Product.pricePaise (bigint) to UI rupees string with exactly 2 decimals; map UI rupees string to bigint paise with safe rounding/normalization so a saved product reloads with the same displayed price."
+          "description": "Update backendToUIProduct and related helpers to accept and normalize numeric-like values (bigint | number | string) for id and pricePaise: ensure UI Product.id is always String(...) and price is always rendered with exactly 2 decimals; avoid relying on direct Number(bigint) conversions where possible by normalizing to bigint safely first."
         },
         {
           "path": "frontend/src/hooks/useProducts.ts",
           "operation": "modify",
-          "description": "Ensure product fetch/mutations consistently use the corrected mapping helpers so values displayed in AdminPanel and ShopView reflect rupees (2 decimals) while calls into the backend actor use paise bigints."
-        },
-        {
-          "path": "frontend/src/components/AdminPanel.tsx",
-          "operation": "modify",
-          "description": "Align AdminPanel add/edit price handling with the rupees (2 decimals) UI model (e.g., prefill edit dialog from mapped product price, and normalize any user-entered price to 2 decimals for display consistency after save). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/ShopView.tsx",
-          "operation": "modify",
-          "description": "Confirm ShopView displays the mapped UI rupee price (2 decimals) consistently after refetch and refresh (no direct paise display). Verify the component's usage instructions before implementing."
+          "description": "Ensure fetched/created products are mapped through the hardened backend→UI normalization so React list keys remain stable strings and the UI never enters an error state due to unexpected number vs bigint values from the runtime."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Fix update-product conversion typing by preventing passing an object with id into uiToBackendProductData, and make add/update/delete mutations call the backend actor with correct argument types.",
+      "summary": "Fix products CRUD hook argument typing by safely converting UI string IDs to bigint for update/delete and ensuring UI→backend mapping helpers receive id-less data on update.",
       "acceptanceCriteria": [
-        "TypeScript build succeeds with no type errors related to product mapping/conversion.",
-        "Updating a product name and/or price in the AdminPanel succeeds and persists after refresh.",
-        "Deleting a product in the AdminPanel succeeds and the product is removed after refresh."
+        "Updating a product works after adding it (no \"Product not found\" due to ID conversion issues).",
+        "Deleting a product works after adding it (no errors due to ID conversion issues).",
+        "The update-product path does not pass a value containing an `id` field into the UI→backend conversion helper that expects `Omit<Product, 'id'>`."
       ],
       "file_operations": [
-        {
-          "path": "frontend/src/hooks/useProducts.ts",
-          "operation": "modify",
-          "description": "Refactor update mutation to pass Omit<Product,'id'> into uiToBackendProductData (exclude id before conversion), and ensure add/update/delete always convert id to bigint and pass correctly typed arguments to the backend actor."
-        },
         {
           "path": "frontend/src/lib/productMapping.ts",
           "operation": "modify",
-          "description": "Tighten types and naming in uiToBackendProductData to clearly return backend-ready fields (name, pricePaise bigint, image nullable) and prevent accidental misuse with objects that include id."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Surface underlying errors for failed product add/update/delete operations in both toast messages and console logs for easier diagnosis.",
-      "acceptanceCriteria": [
-        "If add/update/delete fails, the toast includes a short error reason when available (fallback to a generic English message if not).",
-        "The console log includes the caught error object for add/update/delete failures."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/AdminPanel.tsx",
-          "operation": "modify",
-          "description": "Improve catch blocks for add/update/delete to log the full caught error object to the console and show a toast that includes a short extracted error message when available (otherwise keep the existing generic English fallback). Verify the component's usage instructions before implementing."
+          "description": "Add/adjust shared conversion utilities to safely parse UI id strings into bigint for backend calls (with validation and clear errors) and to normalize Nat-like values when needed, so hooks can reuse consistent conversion logic."
         },
         {
           "path": "frontend/src/hooks/useProducts.ts",
           "operation": "modify",
-          "description": "Ensure mutations propagate meaningful Error messages upward (e.g., preserve actor call failures) so AdminPanel can display the underlying reason in toasts, while still invalidating products queries on success."
-        },
-        {
-          "path": "frontend/src/lib/utils.ts",
-          "operation": "modify",
-          "description": "Add a small shared helper to extract a user-safe message from unknown caught errors (e.g., Error.message / string / fallback) for reuse by product operations; keep all user-facing text in English."
+          "description": "Update update/delete mutations to convert UI id:string to bigint via a safe parsing helper (instead of raw BigInt(id)); in the update flow, call uiToBackendProductData with an explicit Omit<Product,'id'> (e.g., { name, price, image }) rather than passing an object that includes id, and ensure update/delete use the parsed bigint id consistently."
         }
       ]
     }

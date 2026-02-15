@@ -2,13 +2,49 @@ import type { Product as BackendProduct } from '../backend';
 import type { Product as UIProduct } from '../types/product';
 
 /**
+ * Safely convert numeric-like values (bigint | number | string) to bigint
+ */
+function toSafeBigInt(value: bigint | number | string): bigint {
+  if (typeof value === 'bigint') {
+    return value;
+  }
+  if (typeof value === 'number') {
+    return BigInt(Math.floor(value));
+  }
+  if (typeof value === 'string') {
+    const parsed = BigInt(value);
+    return parsed;
+  }
+  throw new Error(`Cannot convert ${typeof value} to bigint`);
+}
+
+/**
+ * Safely parse UI string ID to bigint for backend calls
+ */
+export function parseProductId(id: string): bigint {
+  try {
+    return BigInt(id);
+  } catch (error) {
+    throw new Error(`Invalid product ID: ${id}`);
+  }
+}
+
+/**
  * Convert backend Product (bigint id/pricePaise) to UI Product (string id/price in rupees)
+ * Handles numeric-like values robustly (bigint | number | string)
  */
 export function backendToUIProduct(backendProduct: BackendProduct): UIProduct {
+  // Normalize id to string, handling number/bigint/string
+  const id = String(toSafeBigInt(backendProduct.id as any));
+  
+  // Normalize pricePaise to bigint, then format
+  const pricePaise = toSafeBigInt(backendProduct.pricePaise as any);
+  const price = formatPriceFromPaise(pricePaise);
+
   return {
-    id: backendProduct.id.toString(),
+    id,
     name: backendProduct.name,
-    price: formatPriceFromPaise(backendProduct.pricePaise),
+    price,
     image: backendProduct.image || undefined,
   };
 }

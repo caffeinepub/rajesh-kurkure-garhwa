@@ -1,76 +1,50 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T04:39:40.620Z",
+  "generatedAt": "2026-02-15T04:56:19.790Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 2,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Fix the product price mapping so that prices are stored in the backend as integer paise (cents) but displayed and edited in the UI as rupees with 2 decimal places, ensuring a product saved from AdminPanel shows the same price when reloaded.",
+        "summary": "Fix the product ID type mismatch that causes the UI to show an error (e.g., \"unable to load the product\") after adding any product by normalizing backend product IDs and pricePaise values to the UI’s expected types (UI Product.id must always be a string), even when the agent/runtime provides Nat values as JavaScript numbers instead of bigint.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/lib/productMapping.ts",
-          "frontend/src/hooks/useProducts.ts",
-          "frontend/src/components/AdminPanel.tsx",
-          "frontend/src/components/ShopView.tsx"
+          "frontend/src/hooks/useProducts.ts"
         ],
         "matchedFiles": [
           "frontend/src/lib/productMapping.ts",
-          "frontend/src/hooks/useProducts.ts",
-          "frontend/src/components/AdminPanel.tsx"
+          "frontend/src/hooks/useProducts.ts"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Fix the frontend update-product data conversion to avoid passing an object that includes an `id` field into `uiToBackendProductData` (which expects `Omit<Product, 'id'>`), and ensure add/update/delete product mutations reliably call the backend with correctly typed arguments.",
+        "summary": "Update the products CRUD hook to ensure all backend calls receive correctly typed arguments derived from UI state: convert UI string IDs to Nat/bigint safely for update/delete operations, and ensure update-product data conversion does not pass an object containing an id field into the UI→backend mapping helper.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useProducts.ts",
-          "frontend/src/lib/productMapping.ts"
+          "frontend/src/lib/productMapping.ts",
+          "frontend/src/hooks/useProducts.ts"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useProducts.ts",
-          "frontend/src/lib/productMapping.ts"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Improve error visibility for failed product save/update/delete operations by surfacing the underlying error message (when available) in the UI toast and console, so failures are diagnosable without guessing.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/AdminPanel.tsx",
-          "frontend/src/hooks/useProducts.ts",
-          "frontend/src/lib/utils.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/AdminPanel.tsx",
-          "frontend/src/hooks/useProducts.ts",
-          "frontend/src/lib/utils.ts"
+          "frontend/src/lib/productMapping.ts",
+          "frontend/src/hooks/useProducts.ts"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/AdminPanel.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useProducts.ts",
     "frontend/src/lib/productMapping.ts",
-    "frontend/src/lib/utils.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
